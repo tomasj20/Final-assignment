@@ -58,8 +58,8 @@ class GraphicsProgram3D:
 
         self.tex_id_win_screen_diffuse = self.load_texture("./textures/winscreen.png")
         self.tex_id_win_screen_specular = self.load_texture("./textures/winscreen.png")
-        self.tex_id_bullet_diff = self.load_texture("./textures/chopper.jpg")
-        self.tex_id_bullet_spec = self.load_texture("./textures/chopper.jpg")
+
+
 
         self.tex_id_player_diffuse = self.load_texture("./textures/unwrap.jpg")
         self.tex_id_player_specular = self.load_texture("./textures/unwrap.jpg")
@@ -67,6 +67,11 @@ class GraphicsProgram3D:
         self.tex_id_roadintersection_dif = self.load_texture("./textures/roadint.png")
         self.tex_id_roadintersection_spec = self.load_texture("./textures/roadint.png")
 
+        self.tex_id_car_dif = self.load_texture("./textures/car.png")
+        self.tex_id_car_spec = self.load_texture("./textures/car.png")
+
+        self.tex_id_car1_dif = self.load_texture("./textures/car1.png")
+        self.tex_id_car1_spec = self.load_texture("./textures/car1.png")
 
 
         self.projection_matrix = ProjectionMatrix()
@@ -80,13 +85,16 @@ class GraphicsProgram3D:
         """Obj models"""
         self.obj_model_flashlight = objloader.load_obj_file(sys.path[0] + '/objects/', 'gun.obj')
         self.obj_model_player = objloader.load_obj_file(sys.path[0] + '/objects/', 'bomber.obj')
+        self.obj_model_car = objloader.load_obj_file(sys.path[0] + '/objects/', 'car.obj')
+        self.obj_model_car1 = objloader.load_obj_file(sys.path[0] + '/objects/', 'car1.obj')
 
         #self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'building.obj')
 
 
         """Walls: x, y, z positions, and x, y, z scale"""
         self.wall_list2 = [
-            [4.8, 3.0, 2.6, 3, 5, 3]
+            [11.1, 2.0, 1.5,2, 3, 7.5],
+            [5.1, 2.0, 1.5, 2, 3, 7.5]
         ]
 
         self.ceilingandfloorlvl1 = [
@@ -119,8 +127,8 @@ class GraphicsProgram3D:
     def get_walls_closest(self):
         if self.lvl == 1:
             for item in self.wall_list2:
-                if item[0]-2.0 <= self.view_matrix.eye.x <= item[0]+2.0:
-                    if item[2]-2.0 <= self.view_matrix.eye.z <= item[2]+2.0:
+                if item[0]-4.0 <= self.view_matrix.eye.x <= item[0]+4.0:
+                    if item[2]-4.0 <= self.view_matrix.eye.z <= item[2]+4.0:
                         if item not in self.close_walls:
                             self.close_walls.append(item)
                             continue
@@ -400,6 +408,33 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_car_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_car_spec)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(8.0, 0.55, 4.0)
+        self.model_matrix.add_rotate_y(pi)
+        self.model_matrix.add_scale(0.03, 0.07, 0.03)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_car.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_car1_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_car1_spec)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(4.5, 0.45, 1.0)
+        self.model_matrix.add_rotate_y(pi)
+        self.model_matrix.add_scale(0.8, 1.0, 1.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_car1.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)

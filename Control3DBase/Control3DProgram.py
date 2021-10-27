@@ -94,7 +94,9 @@ class GraphicsProgram3D:
         """Walls: x, y, z positions, and x, y, z scale"""
         self.wall_list2 = [
             [11.1, 2.0, 1.5,2, 3, 7.5],
-            [5.1, 2.0, 1.5, 2, 3, 7.5]
+            [5.1, 2.0, 1.5, 2, 3, 7.5],
+            [8.0232, 0.45, 4.1309, 0.8, 1.0, 1.0],
+            [8.2, 0.45, 1.4405, 0.8, 1.0, 1.2]
         ]
 
         self.ceilingandfloorlvl1 = [
@@ -290,7 +292,6 @@ class GraphicsProgram3D:
 
         self.collison_check()
         self.get_walls_closest()
-
 
     def display(self):
         glEnable(GL_DEPTH_TEST)

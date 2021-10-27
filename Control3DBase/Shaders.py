@@ -45,6 +45,7 @@ class Shader3D:
 
         self.normalLightDirection = glGetUniformLocation(self.renderingProgramID, "u_normal_light_direction")
         self.normalLightColor     = glGetUniformLocation(self.renderingProgramID, "u_normal_light_color")
+        self.otherLightDirection = glGetUniformLocation(self.renderingProgramID, "u_other_light_direction")
 
         self.lightPosition = glGetUniformLocation(self.renderingProgramID, "u_light_position")
         self.lightColor = glGetUniformLocation(self.renderingProgramID, "u_light_color")
@@ -119,6 +120,9 @@ class Shader3D:
 
     def set_normal_light_direction(self, pos):
         glUniform4f(self.normalLightDirection, pos.x, pos.y, pos.z, 1.0)
+
+    def set_other_light_direction(self, pos):
+        glUniform4f(self.otherLightDirection, pos.x, pos.y, pos.z, 1.0)
 
     def set_normal_light_color(self, rgb):
         glUniform4f(self.normalLightColor, rgb.r, rgb.g, rgb.b, 1.0)

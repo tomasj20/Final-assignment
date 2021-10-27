@@ -46,6 +46,9 @@ class GraphicsProgram3D:
         self.tex_id_building_diffuse = self.load_texture("./textures/building.jpg")
         self.tex_id_building_specular = self.load_texture("./textures/building.jpg")
 
+        self.tex_id_building2_diffuse = self.load_texture("./textures/building2.jpg")
+        self.tex_id_building2_specular = self.load_texture("./textures/building2.jpg")
+
         self.tex_id_floorandceiling = self.load_texture("./textures/road.jpg")
         self.tex_id_floorandceiling_specular = self.load_texture("./textures/road.jpg")
 
@@ -60,6 +63,10 @@ class GraphicsProgram3D:
 
         self.tex_id_player_diffuse = self.load_texture("./textures/unwrap.jpg")
         self.tex_id_player_specular = self.load_texture("./textures/unwrap.jpg")
+
+        self.tex_id_roadintersection_dif = self.load_texture("./textures/roadint.png")
+        self.tex_id_roadintersection_spec = self.load_texture("./textures/roadint.png")
+
 
 
         self.projection_matrix = ProjectionMatrix()
@@ -298,6 +305,7 @@ class GraphicsProgram3D:
         """"LIGHTS"""
         self.shader.set_normal_light_direction(Point(1.5, -1, -2))
         self.shader.set_normal_light_color(Color(1.0, 1.0, 1.0))
+        self.shader.set_other_light_direction(Point(-1.5, -1, -2))
 
 
         """
@@ -332,15 +340,14 @@ class GraphicsProgram3D:
                 self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 
-
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_building_diffuse)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_dif)
         glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_building_specular)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_spec)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(10.1, 2.0, 2.6)
-        self.model_matrix.add_scale(2, 3, 10)
+        self.model_matrix.add_translation(7.9, 0.0, -5.0)
+        self.model_matrix.add_scale(8.0, 1.0, 8.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.cube.draw()
         self.model_matrix.pop_matrix()
@@ -348,22 +355,28 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_wall_diffuse)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_building_diffuse)
         glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_wall_specular)
-        self.shader.set_material_diffuse(Color(0.7, 0.7, 0.7))
-        self.shader.set_material_specular(Color(0.5, 0.5, 0.5))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_emit(0.0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_building_specular)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(11.1, 2.0, 1.5)
+        self.model_matrix.add_scale(2, 3, 7.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
 
-        if self.lvl == 1:
-            for index in self.wall_list2:
-                self.model_matrix.push_matrix()
-                self.model_matrix.add_translation(index[0], index[1], index[2])
-                self.model_matrix.add_scale(index[3], index[4], index[5])
-                self.shader.set_model_matrix(self.model_matrix.matrix)
-                self.cube.draw()
-                self.model_matrix.pop_matrix()
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_building2_diffuse)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_building2_specular)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(5.1, 2.0, 1.5)
+        self.model_matrix.add_scale(2, 3, 7.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 
         glEnable(GL_TEXTURE_2D)

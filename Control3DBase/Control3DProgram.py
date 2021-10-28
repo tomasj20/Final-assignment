@@ -80,6 +80,9 @@ class GraphicsProgram3D:
         self.tex_id_car1_dif = self.load_texture("./textures/car1.png")
         self.tex_id_car1_spec = self.load_texture("./textures/car1.png")
 
+        self.tex_id_humvee_dif = self.load_texture("./textures/humvee.png")
+        self.tex_id_humvee_spec = self.load_texture("./textures/humvee.png")
+
 
         self.projection_matrix = ProjectionMatrix()
         self.fov = pi / 2
@@ -95,6 +98,7 @@ class GraphicsProgram3D:
         self.obj_model_car = objloader.load_obj_file(sys.path[0] + '/objects/', 'car.obj')
         self.obj_model_car1 = objloader.load_obj_file(sys.path[0] + '/objects/', 'car1.obj')
         self.obj_model_train = objloader.load_obj_file(sys.path[0] + '/objects/', 'train.obj')
+        self.obj_model_humvee = objloader.load_obj_file(sys.path[0] + '/objects/', 'humvee.obj')
 
         #self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'building.obj')
 
@@ -104,14 +108,14 @@ class GraphicsProgram3D:
             [11.1, 2.0, 1.5,2, 3, 7.5],
             [5.1, 2.0, 1.5, 2, 3, 7.5],
             [8.0232, 0.45, 4.1309, 0.8, 1.0, 1.0],
-            [8.2, 0.45, 1.4405, 0.8, 1.0, 1.2]
+            [8.2, 0.45, 1.4405, 0.8, 1.0, 1.2],
+            [6.1, 1.0, -3.5, 0.5, 2.0, 2.0],
+            [6.1, 1.0, -7.0, 0.5, 2.0, 2.0]
         ]
 
         self.train_station = [
-            [6.1, 1.0, -3.5, 0.5, 3.0, 2.0],
-            [6.1, 1.0, -7.0, 0.5, 3.0, 2.0],
-            [5.1, 1.0, -2.5, 2.0, 3.0, 0.5],
-            [5.1, 1.0, -9.0, 2.0, 3.0, 0.5],
+            [6.1, 1.0, -3.5, 0.5, 2.0, 2.0],
+            [6.1, 1.0, -7.0, 0.5, 2.0, 2.0],
         ]
 
         self.close_walls = []
@@ -132,9 +136,7 @@ class GraphicsProgram3D:
         self.SPACE_key_down = False
         self.p_key_down = False
         self.aiming = False
-
         self.won = False
-
         self.ENTER_key_down = True
 
     def get_walls_closest(self):
@@ -483,6 +485,20 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(0.3, 0.2, 0.1)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_train.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_humvee_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_humvee_spec)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(11.0, 1.0, -7.2)
+        self.model_matrix.add_rotate_y(3*pi/2)
+        self.model_matrix.add_scale(0.35, 0.4, 0.3)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_humvee.draw(self.shader)
         self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 

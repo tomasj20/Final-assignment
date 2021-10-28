@@ -23,10 +23,10 @@ class GraphicsProgram3D:
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shooting = False
         """Sounds"""
-        self.crash_sound = pygame.mixer.Sound("sounds/scream.wav")
-        self.lvlup_sound = pygame.mixer.Sound("sounds/lvlcomplete.wav")
-        self.flashlight_click = pygame.mixer.Sound("sounds/flashlight.wav")
-        self.jumpscare = pygame.mixer.Sound("sounds/jumpscare.wav")
+        #self.crash_sound = pygame.mixer.Sound("sounds/scream.wav")
+        #self.lvlup_sound = pygame.mixer.Sound("sounds/lvlcomplete.wav")
+        #self.flashlight_click = pygame.mixer.Sound("sounds/flashlight.wav")
+        #self.jumpscare = pygame.mixer.Sound("sounds/jumpscare.wav")
 
 
         self.flashlight_angle = 3*pi/2 #To calculate flashlight yaw
@@ -39,8 +39,8 @@ class GraphicsProgram3D:
         self.tex_id_wall_specular = self.load_texture("./textures/window_texture.jpeg")
 
 
-        self.tex_id_flashlight_diffuse = self.load_texture("./textures/rifle2.jpg")
-        self.tex_id_flashlight_specular = self.load_texture("./textures/rifle2.jpg")
+        self.tex_id_flashlight_diffuse = self.load_texture("./textures/AR.jpg")
+        self.tex_id_flashlight_specular = self.load_texture("./textures/AR.jpg")
 
         self.tex_id_building_diffuse = self.load_texture("./textures/building.jpg")
         self.tex_id_building_specular = self.load_texture("./textures/building.jpg")
@@ -51,8 +51,8 @@ class GraphicsProgram3D:
         self.tex_id_floorandceiling = self.load_texture("./textures/road.jpg")
         self.tex_id_floorandceiling_specular = self.load_texture("./textures/road.jpg")
 
-        self.tex_id_brick_diff = self.load_texture("./textures/brick.jpg")
-        self.tex_id_brick_spec = self.load_texture("./textures/brick.jpg")
+        self.tex_id_brick_diff = self.load_texture("./textures/trainwall.jpg")
+        self.tex_id_brick_spec = self.load_texture("./textures/trainwall.jpg")
 
         """Ignore the name this is the start  up screen"""
         self.tex_id_jumpscare_diffuse = self.load_texture("./textures/screen.png")
@@ -96,11 +96,11 @@ class GraphicsProgram3D:
 
         """Obj models"""
         self.obj_model_flashlight = objloader.load_obj_file(sys.path[0] + '/objects/', 'gun.obj')
-        self.obj_model_player = objloader.load_obj_file(sys.path[0] + '/objects/', 'bomber.obj')
+        #self.obj_model_player = objloader.load_obj_file(sys.path[0] + '/objects/', 'bomber.obj')
         self.obj_model_car = objloader.load_obj_file(sys.path[0] + '/objects/', 'car.obj')
         self.obj_model_car1 = objloader.load_obj_file(sys.path[0] + '/objects/', 'car1.obj')
         self.obj_model_train = objloader.load_obj_file(sys.path[0] + '/objects/', 'train.obj')
-        self.obj_model_humvee = objloader.load_obj_file(sys.path[0] + '/objects/', 'humvee.obj')
+        #self.obj_model_humvee = objloader.load_obj_file(sys.path[0] + '/objects/', 'humvee.obj')
         self.obj_model_station = objloader.load_obj_file(sys.path[0] + '/objects/', 'station.obj')
 
         #self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'building.obj')
@@ -114,12 +114,23 @@ class GraphicsProgram3D:
             [8.2, 0.45, 1.4405, 0.8, 1.0, 1.2],
             [6.1, 1.0, -3.5, 0.5, 2.0, 2.0],
             [6.1, 1.0, -7.0, 0.5, 2.0, 2.0],
-            [14.9, 0.5, -6, 2.5, 0.4, 5.5]
+            [14.9, 0.5, -6, 2.5, 0.4, 5.5],
+            [5.85, 1.0, -3.25, 0.5, 2.0, 2.0],
+            [5.85, 1.0, -7.3, 0.5, 2.0, 3.25],
+            [4.85, 1.0, -9.0, 2.5, 2.0, 0.5],
+            [0.5, 1.0, -3.25, 10.2, 2.0, 0.5],
+            [-0.5, 1.0, -6.7, 8.2, 2.0, 0.5],
+            [3.7, 1.0, -7.6, 0.5, 2.0, 2.3],
+            [-4.6, 1.0, -4.975, 0.5, 2.0, 3.0]
         ]
 
         self.train_station = [
-            [6.1, 1.0, -3.5, 0.5, 2.0, 2.0],
-            [6.1, 1.0, -7.0, 0.5, 2.0, 2.0],
+            [5.85, 1.0, -3.25, 0.5, 2.0, 2.0],
+            [5.85, 1.0, -7.3, 0.5, 2.0, 3.25],
+            [4.85, 1.0, -9.0, 2.5, 2.0, 0.5],
+            [0.5, 1.0, -3.25, 10.2, 2.0, 0.5],
+            [-0.5, 1.0, -6.7, 8.2, 2.0, 0.5],
+            [3.7, 1.0, -7.6, 0.5, 2.0, 2.3],
         ]
 
         self.close_walls = []
@@ -393,6 +404,21 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_spec)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(-4.6, 1.0, -4.975)
+        self.model_matrix.add_scale(0.5, 2.0, 3.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_rail_dif)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_rail_spec)
@@ -493,7 +519,7 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 
-        glEnable(GL_TEXTURE_2D)
+        """glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_humvee_dif)
         glActiveTexture(GL_TEXTURE1)
@@ -505,7 +531,7 @@ class GraphicsProgram3D:
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_humvee.draw(self.shader)
         self.model_matrix.pop_matrix()
-        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_TEXTURE_2D)"""
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
@@ -521,7 +547,7 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 
-        glEnable(GL_TEXTURE_2D)
+        """glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_player_diffuse)
         glActiveTexture(GL_TEXTURE1)
@@ -537,7 +563,7 @@ class GraphicsProgram3D:
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_player.draw(self.shader)
         self.model_matrix.pop_matrix()
-        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_TEXTURE_2D)"""
 
         glDisable(GL_BLEND)
         pygame.display.flip()

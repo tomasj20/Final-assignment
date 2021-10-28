@@ -38,8 +38,7 @@ class GraphicsProgram3D:
         self.shader.set_specular_texture(1)
         self.tex_id_wall_specular = self.load_texture("./textures/window_texture.jpeg")
 
-        self.tex_id_vurdulak_diffuse = self.load_texture("./textures/vurdalak_Base_Color.jpg")
-        self.tex_id_vurdulak_specular = self.load_texture("./textures/vurdalak_Base_Color.jpg")
+
         self.tex_id_flashlight_diffuse = self.load_texture("./textures/rifle2.jpg")
         self.tex_id_flashlight_specular = self.load_texture("./textures/rifle2.jpg")
 
@@ -83,6 +82,9 @@ class GraphicsProgram3D:
         self.tex_id_humvee_dif = self.load_texture("./textures/humvee.png")
         self.tex_id_humvee_spec = self.load_texture("./textures/humvee.png")
 
+        self.tex_id_station_dif = self.load_texture("./textures/gas.png")
+        self.tex_id_station_spec = self.load_texture("./textures/gas.png")
+
 
         self.projection_matrix = ProjectionMatrix()
         self.fov = pi / 2
@@ -99,6 +101,7 @@ class GraphicsProgram3D:
         self.obj_model_car1 = objloader.load_obj_file(sys.path[0] + '/objects/', 'car1.obj')
         self.obj_model_train = objloader.load_obj_file(sys.path[0] + '/objects/', 'train.obj')
         self.obj_model_humvee = objloader.load_obj_file(sys.path[0] + '/objects/', 'humvee.obj')
+        self.obj_model_station = objloader.load_obj_file(sys.path[0] + '/objects/', 'station.obj')
 
         #self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'building.obj')
 
@@ -110,7 +113,8 @@ class GraphicsProgram3D:
             [8.0232, 0.45, 4.1309, 0.8, 1.0, 1.0],
             [8.2, 0.45, 1.4405, 0.8, 1.0, 1.2],
             [6.1, 1.0, -3.5, 0.5, 2.0, 2.0],
-            [6.1, 1.0, -7.0, 0.5, 2.0, 2.0]
+            [6.1, 1.0, -7.0, 0.5, 2.0, 2.0],
+            [14.9, 0.5, -6, 2.5, 0.4, 5.5]
         ]
 
         self.train_station = [
@@ -303,6 +307,7 @@ class GraphicsProgram3D:
         if self.SPACE_key_down:
             self.shooting_vector = self.view_matrix.n
 
+
         self.collison_check()
         self.get_walls_closest()
 
@@ -325,7 +330,7 @@ class GraphicsProgram3D:
         self.cube.set_verticies(self.shader)
 
         """"LIGHTS"""
-        self.shader.set_normal_light_direction(Point(1.5, -1, -2))
+        self.shader.set_normal_light_direction(Point(1.5, 1, -2))
         self.shader.set_normal_light_color(Color(1.0, 1.0, 1.0))
         self.shader.set_other_light_direction(Point(-1.5, -1, -2))
 
@@ -499,6 +504,20 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(0.35, 0.4, 0.3)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_humvee.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_station_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_station_spec)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(11.0, 0.5, -4.2)
+        self.model_matrix.add_rotate_y(3*pi/2)
+        self.model_matrix.add_scale(0.35, 0.4, 0.3)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_station.draw(self.shader)
         self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 

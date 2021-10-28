@@ -52,6 +52,9 @@ class GraphicsProgram3D:
         self.tex_id_floorandceiling = self.load_texture("./textures/road.jpg")
         self.tex_id_floorandceiling_specular = self.load_texture("./textures/road.jpg")
 
+        self.tex_id_brick_diff = self.load_texture("./textures/brick.jpg")
+        self.tex_id_brick_spec = self.load_texture("./textures/brick.jpg")
+
         """Ignore the name this is the start  up screen"""
         self.tex_id_jumpscare_diffuse = self.load_texture("./textures/screen.png")
         self.tex_id_jumpscare_specular = self.load_texture("./textures/screen.png")
@@ -59,13 +62,17 @@ class GraphicsProgram3D:
         self.tex_id_win_screen_diffuse = self.load_texture("./textures/winscreen.png")
         self.tex_id_win_screen_specular = self.load_texture("./textures/winscreen.png")
 
-
+        self.tex_id_train_diffuse = self.load_texture("./textures/train.png")
+        self.tex_id_train_specular = self.load_texture("./textures/train.png")
 
         self.tex_id_player_diffuse = self.load_texture("./textures/unwrap.jpg")
         self.tex_id_player_specular = self.load_texture("./textures/unwrap.jpg")
 
         self.tex_id_roadintersection_dif = self.load_texture("./textures/roadint.png")
         self.tex_id_roadintersection_spec = self.load_texture("./textures/roadint.png")
+
+        self.tex_id_rail_dif = self.load_texture("./textures/rail.jpg")
+        self.tex_id_rail_spec = self.load_texture("./textures/rail.jpg")
 
         self.tex_id_car_dif = self.load_texture("./textures/car.png")
         self.tex_id_car_spec = self.load_texture("./textures/car.png")
@@ -87,6 +94,7 @@ class GraphicsProgram3D:
         self.obj_model_player = objloader.load_obj_file(sys.path[0] + '/objects/', 'bomber.obj')
         self.obj_model_car = objloader.load_obj_file(sys.path[0] + '/objects/', 'car.obj')
         self.obj_model_car1 = objloader.load_obj_file(sys.path[0] + '/objects/', 'car1.obj')
+        self.obj_model_train = objloader.load_obj_file(sys.path[0] + '/objects/', 'train.obj')
 
         #self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'building.obj')
 
@@ -99,8 +107,11 @@ class GraphicsProgram3D:
             [8.2, 0.45, 1.4405, 0.8, 1.0, 1.2]
         ]
 
-        self.ceilingandfloorlvl1 = [
-            [8.1, 0.0, 1.0, 4.0, 1.0, 8.0],
+        self.train_station = [
+            [6.1, 1.0, -3.5, 0.5, 3.0, 2.0],
+            [6.1, 1.0, -7.0, 0.5, 3.0, 2.0],
+            [5.1, 1.0, -2.5, 2.0, 3.0, 0.5],
+            [5.1, 1.0, -9.0, 2.0, 3.0, 0.5],
         ]
 
         self.close_walls = []
@@ -338,15 +349,26 @@ class GraphicsProgram3D:
         glBindTexture(GL_TEXTURE_2D, self.tex_id_floorandceiling)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_floorandceiling_specular)
-        if self.lvl == 1:
-            for index in self.ceilingandfloorlvl1:
-                self.model_matrix.push_matrix()
-                self.model_matrix.add_translation(index[0], index[1], index[2])
-                self.model_matrix.add_scale(index[3], index[4], index[5])
-                self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(8.1, 0.0, 1.0)
+        self.model_matrix.add_scale(4.0, 1.0, 8.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
 
-                self.cube.draw()
-                self.model_matrix.pop_matrix()
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_brick_diff)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_brick_spec)
+        for item in self.train_station:
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(item[0], item[1], item[2])
+            self.model_matrix.add_scale(item[3], item[4], item[5])
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.cube.draw()
+            self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 
         glEnable(GL_TEXTURE_2D)
@@ -357,6 +379,19 @@ class GraphicsProgram3D:
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(7.9, 0.0, -5.0)
         self.model_matrix.add_scale(8.0, 1.0, 8.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_rail_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_rail_spec)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(1.0, 0.0, -5.0)
+        self.model_matrix.add_scale(8.0, 1.0, 3.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.cube.draw()
         self.model_matrix.pop_matrix()
@@ -434,6 +469,20 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(0.8, 1.0, 1.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_car1.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_train_diffuse)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_train_specular)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(0.5, 0.4, -5.0)
+        self.model_matrix.add_rotate_y(pi/2)
+        self.model_matrix.add_scale(0.3, 0.2, 0.1)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_train.draw(self.shader)
         self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 

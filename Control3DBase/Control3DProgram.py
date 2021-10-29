@@ -58,6 +58,12 @@ class GraphicsProgram3D:
         self.tex_id_jumpscare_diffuse = self.load_texture("./textures/screen.png")
         self.tex_id_jumpscare_specular = self.load_texture("./textures/screen.png")
 
+        self.tex_id_tunnel_diffuse = self.load_texture("./textures/tunnel2.jpg")
+        self.tex_id_tunnel_specular = self.load_texture("./textures/tunnel2.jpg")
+
+        self.tex_id_stop_diffuse = self.load_texture("./textures/stop.png")
+        self.tex_id_stop_specular = self.load_texture("./textures/stop.png")
+
         self.tex_id_win_screen_diffuse = self.load_texture("./textures/winscreen.png")
         self.tex_id_win_screen_specular = self.load_texture("./textures/winscreen.png")
 
@@ -102,6 +108,7 @@ class GraphicsProgram3D:
         self.obj_model_train = objloader.load_obj_file(sys.path[0] + '/objects/', 'train.obj')
         #self.obj_model_humvee = objloader.load_obj_file(sys.path[0] + '/objects/', 'humvee.obj')
         self.obj_model_station = objloader.load_obj_file(sys.path[0] + '/objects/', 'station.obj')
+        self.obj_model_stop = objloader.load_obj_file(sys.path[0] + '/objects/', 'stop.obj')
 
         #self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'building.obj')
 
@@ -404,9 +411,9 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_dif)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_tunnel_diffuse)
         glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_spec)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_tunnel_specular)
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(-4.6, 1.0, -4.975)
         self.model_matrix.add_scale(0.5, 2.0, 3.0)
@@ -516,6 +523,20 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(0.3, 0.2, 0.1)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_train.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_diffuse)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_specular)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(3.0, 0.4, -3.9)
+        self.model_matrix.add_rotate_y(pi / 2)
+        self.model_matrix.add_scale(0.0017, 0.0017, 0.0017)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_stop.draw(self.shader)
         self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
 

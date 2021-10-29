@@ -1,7 +1,7 @@
 # Blender v2.79 (sub 0) OBJ File: 'HUMMER1.blend'
 # www.blender.org
 mtllib humvee.mtl
-o wheel_Плоскость.005
+o HUMVEE_M242
 v 0.191997 -0.631379 -0.012074
 v 0.191997 -0.559313 0.059993
 v 0.191997 -0.532935 0.158438

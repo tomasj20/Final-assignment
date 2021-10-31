@@ -192,6 +192,24 @@ class Sphere:
         for i in range(0, self.vertex_count, (self.slices + 1) * 2):
             glDrawArrays(GL_TRIANGLE_STRIP, i, (self.slices + 1) * 2)
 
+class Sprite:
+    def __init__(self):
+        vertex_array = [-0.5, -0.5, 0.0, 0.0, 0.0,
+                               -0.5, 0.5, 0.0, 0.0, 1.0,
+                               0.5, 0.5, 0.0, 1.0, 1.0,
+                               0.5, -0.5, 0.0, 1.0, 0.0]
+        self.vertex_buffer_id = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vertex_buffer_id)
+        glBufferData(GL_ARRAY_BUFFER, np.array(vertex_array, dtype='float32'), GL_STATIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        vertex_array = None
+
+    def draw(self, sprite_shader):
+        sprite_shader.set_attribute_buffers(self.vertex_buffer_id)
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+
 class MeshModel:
     def __init__(self):
         self.vertex_arrays = dict()

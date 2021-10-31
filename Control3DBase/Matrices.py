@@ -149,7 +149,7 @@ class ViewMatrix:
                         -s * t.y + c * self.n.y,
                         -s * t.z + c * self.n.z)
 
-    """ Decided not to use this for this assignment not important for this game
+    #Decided not to use this for this assignment not important for this game
     def pitch(self, angle):
         # Rotate around u
         ang_cos = cos(angle)
@@ -161,7 +161,7 @@ class ViewMatrix:
 
         self.v = Vector(-ang_sin * t.x + ang_cos * self.v.x,
                         -ang_sin * t.y + ang_cos * self.v.y,
-                        -ang_sin * t.z + ang_cos * self.v.z)"""
+                        -ang_sin * t.z + ang_cos * self.v.z)
 
 
     def slide(self, del_u, del_v, del_n):

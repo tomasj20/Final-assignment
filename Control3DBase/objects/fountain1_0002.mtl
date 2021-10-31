@@ -1,0 +1,16 @@
+# Blender MTL File: 'fountain1_0001.blend'
+# Material Count: 1
+
+newmtl map_Fountain01
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.355666 0.309446 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump F:\\Downloads\\Fountain\\map_Fountain01_Normal.png
+map_Kd F:\\Downloads\\Fountain\\map_Fountain01_BaseColor.png
+map_Ns F:\\Downloads\\Fountain\\map_Fountain01_Roughness.png
+refl F:\\Downloads\\Fountain\\map_Fountain01_Metallic.png

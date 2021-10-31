@@ -54,6 +54,9 @@ class GraphicsProgram3D:
         self.tex_id_brick_diff = self.load_texture("./textures/trainwall.jpg")
         self.tex_id_brick_spec = self.load_texture("./textures/trainwall.jpg")
 
+        self.tex_id_sirene_diff = self.load_texture("./textures/sirene01.jpg")
+        self.tex_id_sirene_spec = self.load_texture("./textures/sirene01.jpg")
+
         """Ignore the name this is the start  up screen"""
         self.tex_id_jumpscare_diffuse = self.load_texture("./textures/screen.png")
         self.tex_id_jumpscare_specular = self.load_texture("./textures/screen.png")
@@ -415,8 +418,9 @@ class GraphicsProgram3D:
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_tunnel_specular)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(-4.6, 1.0, -4.975)
+        self.model_matrix.add_translation(-5.0, 1.0, -4.975)
         self.model_matrix.add_scale(0.5, 2.0, 3.0)
+        self.model_matrix.add_rotate_y(3*pi/2)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.cube.draw()
         self.model_matrix.pop_matrix()

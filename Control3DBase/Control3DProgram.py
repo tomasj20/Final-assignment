@@ -32,6 +32,7 @@ class GraphicsProgram3D:
         self.lvlup_sound = pygame.mixer.Sound("sounds/lvlcomplete.wav")
         self.flashlight_click = pygame.mixer.Sound("sounds/flashlight.wav")
         self.jumpscare = pygame.mixer.Sound("sounds/jumpscare.wav")
+        self.hitmarker = pygame.mixer.Sound("sounds/hitmarker.wav")
 
         self.flashlight_angle = 3 * pi / 2  # To calculate flashlight yaw
         self.player_angle = 0
@@ -88,8 +89,8 @@ class GraphicsProgram3D:
         self.tex_id_station_dif = self.load_texture("./textures/gas.png")
         self.tex_id_station_spec = self.load_texture("./textures/gas.png")
 
-        self.tex_id_monster_dif = self.load_texture("./textures/vurdalak_Base_Color.jpg")
-        self.tex_id_monster_spec = self.load_texture("./textures/vurdalak_Base_Color.jpg")
+        self.tex_id_building3_dif = self.load_texture("./textures/oldbuilding.jpg")
+        self.tex_id_building3_spec = self.load_texture("./textures/oldbuilding.jpg")
 
         self.tex_id_tunnel_dif = self.load_texture("./textures/tunnel1.jpg")
         self.tex_id_tunnel_spec = self.load_texture("./textures/tunnel1.jpg")
@@ -100,6 +101,8 @@ class GraphicsProgram3D:
         self.tex_id_fountain_dif = self.load_texture("./textures/fountain.png")
         self.tex_id_fountain_spec = self.load_texture("./textures/fountain.png")
 
+        self.tex_id_skysphere = self.load_texture("./textures/skysphere.jpeg")
+
         self.tex_id_hitmarker_color = self.load_texture("./textures/hitmarker_color.png")
         self.tex_id_hitmarker_alpha = self.load_texture("./textures/hitmarker_alpha.png")
 
@@ -108,6 +111,7 @@ class GraphicsProgram3D:
         self.projection_matrix.set_perspective(pi / 2, 800 / 600, 0.5, 100)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
         self.cube = Cube()
+        self.sky_sphere = SkySphere(128, 256)
         self.scale = Point(1, 1, 1)
         self.clock = pygame.time.Clock()
 
@@ -121,6 +125,7 @@ class GraphicsProgram3D:
         self.obj_model_station = objloader.load_obj_file(sys.path[0] + '/objects/', 'station.obj')
         self.obj_model_cape = objloader.load_obj_file(sys.path[0] + '/objects/', 'cape.obj')
         self.obj_model_fountain = objloader.load_obj_file(sys.path[0] + '/objects/', 'fountain.obj')
+        self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'Old_Building.obj')
 
         """Walls: x, y, z positions, and x, y, z scale"""
         self.wall_list2 = [
@@ -173,10 +178,21 @@ class GraphicsProgram3D:
         self.jumping = False
         self.lookUP = False
         self.shot_list = []
+        self.counter = 0
+        self.collision = False
+        self.hit_counter = 0
+        self.health = 1000
 
         self.sprite = Sprite()
-        self.enemy = Enemy(Point(7, 0.5, -4))
+        #self.enemy = Enemy(Point(7, 0.5, -4))
+        self.enemy_list_lvl1 = [
+            gameObject(Point(7, 0.5, -4), Point(1, 1, 1), 0, 0.005),
+            gameObject(Point(9.1, 0.5, -4.3), Point(1, 1, 1), 0, 0.002),
+            gameObject(Point(3.3, 0.5, -4.2), Point(1, 1, 1), 0, 0.009),
+            gameObject(Point(7.4, 0.5, -4.1), Point(1, 1, 1), 0, 0.007)
+        ]
         #self.enemy1 = Enemy(Point(10, 0.5, -10))
+
 
         self.collison_check()
         self.get_walls_closest()
@@ -260,31 +276,43 @@ class GraphicsProgram3D:
 
         return texid
 
+
+
     def update(self):
         delta_time = self.clock.tick() / 1000.0
         gravity = 3 * delta_time
         if self.A_key_down:
-            self.view_matrix.yaw(-120 * delta_time)
-            self.flashlight_angle += -((2 * pi) / 3) * delta_time
-            self.player_angle += -((2 * pi) / 3) * delta_time
+            self.view_matrix.yaw(-150 * delta_time)
+            self.flashlight_angle += -((5 * pi) / 6) * delta_time
+            self.player_angle += -((5 * pi) / 6) * delta_time
         if self.D_key_down:
-            self.view_matrix.yaw(120 * delta_time)
-            self.flashlight_angle += ((2 * pi) / 3) * delta_time
-            self.player_angle += ((2 * pi) / 3) * delta_time
+            self.view_matrix.yaw(150 * delta_time)
+            self.flashlight_angle += ((5 * pi) / 6) * delta_time
+            self.player_angle += ((5 * pi) / 6) * delta_time
         if self.T_key_down:
             self.fov -= 0.25 * delta_time
         if self.G_key_down:
             self.fov += 0.25 * delta_time
         if self.UP_key_down and not self.collisionLeftWall and not self.collisionRightWall and not self.collisionTopWall and not self.collisionBottomWall:
-            self.view_matrix.slide(0, 0, -1.5 * delta_time)
+            self.view_matrix.slide(0, 0, -2.0 * delta_time)
         if self.SPACE_key_down:
             self.aiming = True
+
+
             self.fov -= self.fov - 0.75
         if not self.SPACE_key_down:
             self.aiming = False
             self.fov = pi / 2
-        self.enemy.update(self.view_matrix.eye)
-        #self.enemy1.update(self.view_matrix.eye)
+        #for enemy in self.enemy_list_lvl1:
+
+
+        player = gameObject(self.view_matrix.eye, Point(0.5, 0.5, 0.5))
+        for enemy in self.enemy_list_lvl1:
+            enemy.update(self.view_matrix.eye)
+            if enemy.check_intersection(player):
+                self.health -= 1
+                print(self.health)
+
         # if self.lookUP:
         # self.view_matrix.pitch(-(pi/2)*delta_time)
         # if self.DOWN_key_down:
@@ -302,20 +330,27 @@ class GraphicsProgram3D:
             pygame.mixer.Sound.play(self.crash_sound)
             self.view_matrix.eye.y -= 3 * delta_time
         for shot in self.shot_list:
-            shot.position += (Point(-self.view_matrix.n.x / 8, 0, -self.view_matrix.n.z / 8))
-            monster = gameObject(self.enemy.position, Point(1.0, 1.0, 1.0))
-            player = gameObject(self.view_matrix.eye, Point(2.0, 1.0, 2.0))
-            #monster1 = gameObject(self.enemy1.position, Point(1.0, 1.0, 1.0))
+            shot.position += (Point(-self.view_matrix.n.x, 0, -self.view_matrix.n.z))
             updated_shot = gameObject(shot.position, shot.scale)
-            if updated_shot.check_intersection(monster):
-                self.enemy.position.x = 150
-            if monster.check_intersection(player):
-                print("Hit")
-            #if updated_shot.check_intersection(monster1):
-                #self.enemy1.position.z = 150
-            # print(shot.position.x, shot.position.y, shot.position.z)
+            for enemy in self.enemy_list_lvl1:
+                if updated_shot.check_intersection(enemy):
+                    enemy.hit_counter += 1
+                    pygame.mixer.Sound.play(self.hitmarker, 0)
+                    self.collision = True
+                    if enemy.hit_counter > 10:
+                        self.enemy_list_lvl1.remove(enemy)
+                        self.collision = False
+
+                #print(self.hit_counter)
             if shot.position.x < -20 or shot.position.z < -20 or shot.position.x > 20 or shot.position.z > 20:
                 self.shot_list.remove(shot)
+
+        if self.collision:
+            self.counter += 1
+            #print(self.counter)
+        if self.counter > 10:
+            self.collision = False
+            self.counter = 0
 
         """
         Check for direction of player and make him slide accordingly, we also check what part of the wall
@@ -400,16 +435,38 @@ class GraphicsProgram3D:
         glLoadIdentity()
         glMatrixMode(GL_PROJECTION)
         glClearColor(0.0, 0.0, 0.0, 1.0)
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glClear(GL_COLOR_BUFFER_BIT)
 
         glViewport(0, 0, 800, 600)
+        self.model_matrix.load_identity()
+        self.sprite_shader.use()
+        self.sprite_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        self.sprite_shader.set_view_matrix(self.view_matrix.get_matrix())
+
+
+
+        glDisable(GL_DEPTH_TEST)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_skysphere)
+        self.sprite_shader.set_diffuse_texture(0)
+        self.sprite_shader.set_alpha_texture(None)
+        self.sprite_shader.set_opacity(1.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z - 0.08)
+        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+        self.sky_sphere.draw(self.sprite_shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
+        glEnable(GL_DEPTH_TEST)
+        glClear(GL_DEPTH_BUFFER_BIT)
 
         self.shader.use()
         self.projection_matrix.set_perspective(self.fov, 800 / 600, 0.01, 100)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        self.model_matrix.load_identity()
+
         self.cube.set_verticies(self.shader)
 
         self.shader.set_eye_position(self.view_matrix.eye)
@@ -418,21 +475,21 @@ class GraphicsProgram3D:
         self.shader.set_normal_light_color(Color(1.0, 1.0, 1.0))
         self.shader.set_other_light_direction(Point(-1.5, -1, -2))
 
-        """
-        This is almost exactly like the flashlight except we need to point the vector down on the player,
-        so he get's a nice lantern like lighting around him
-        """
-        self.shader.set_light_direction(self.view_matrix.v)
-        self.shader.set_light_color(Color(0.9725, 0.7647, 0.4667))
-        self.shader.set_light_position(
-            Point(self.view_matrix.eye.x, self.view_matrix.eye.y + 0.7, self.view_matrix.eye.z))
-        self.shader.set_light_cutoff(cos((40 + 6.5) * pi / 180))
-        self.shader.set_light_outer_cutoff(cos((40 + 11.5) * pi / 180))
-        self.shader.set_light_constant(1.0)
-        self.shader.set_light_linear(0.14)
-        self.shader.set_light_quad(0.07)
+        self.shader.set_red_light_direction(self.view_matrix.n)
+        self.shader.set_red_light_color(Color(1.0, 0, 0))
+        self.shader.set_red_light_position(
+            Point(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z))
+        """cut off: calculate the cosine value based on an angle and pass the cosine result to the fragment shader."""
+        self.shader.set_red_light_cutoff(cos((40 + 6.5) * pi / 180))
+        self.shader.set_red_light_outer_cutoff(cos((40 + 11.5) * pi / 180))
+        self.shader.set_red_light_constant(1.0)
+        self.shader.set_red_light_linear(0.14)
+        self.shader.set_red_light_quad(0.07)
+
+
 
         """Drawing and some more drawing....."""
+
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_station_dif)
@@ -601,18 +658,19 @@ class GraphicsProgram3D:
         glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_dif)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_spec)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.enemy.position.x, self.enemy.position.y, self.enemy.position.z)
-        self.model_matrix.add_scale(1, 1, 1)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_cape.draw(self.shader)
-        self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
+        for enemy in self.enemy_list_lvl1:
+            self.shader.set_use_texture(1.0)
+            self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+            self.shader.set_material_shiny(10)
+            self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+            self.shader.set_material_emit(0.0)
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(enemy.position.x, enemy.position.y, enemy.position.z)
+            self.model_matrix.add_scale(1, 1, 1)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.obj_model_cape.draw(self.shader)
+            self.model_matrix.pop_matrix()
+            self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
 
@@ -768,6 +826,27 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_building3_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_building3_spec)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(9.0, 0.5, -12.0)
+        self.model_matrix.add_rotate_y(3 * pi / 2)
+        self.model_matrix.add_scale(0.01, 0.02, 0.01)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_building.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_station_dif)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_station_spec)
@@ -777,9 +856,9 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_emit(0.0)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(11.0, 0.5, -4.2)
+        self.model_matrix.add_translation(11.5, 0.5, -4.5)
         self.model_matrix.add_rotate_y(3 * pi / 2)
-        self.model_matrix.add_scale(0.35, 0.4, 0.3)
+        self.model_matrix.add_scale(0.15, 0.2, 0.15)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_station.draw(self.shader)
         self.model_matrix.pop_matrix()
@@ -787,26 +866,6 @@ class GraphicsProgram3D:
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
 
-        glEnable(GL_TEXTURE_2D)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_player_diffuse)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_player_specular)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y - 0.3, self.view_matrix.eye.z)
-        self.model_matrix.add_rotate_y(-self.player_angle)
-        self.model_matrix.add_scale(0.02, 0.025, 0.02)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_player.draw(self.shader)
-        self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
-        glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)
 
         glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -816,21 +875,20 @@ class GraphicsProgram3D:
         self.sprite_shader.set_view_matrix(self.view_matrix.get_matrix())
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_hitmarker_color)
-        self.sprite_shader.set_diffuse_texture(0)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_hitmarker_alpha)
-        self.sprite_shader.set_alpha_texture(1)
-        self.sprite_shader.set_opacity(1.0)
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z - 0.08)
-        self.model_matrix.add_rotate_y(-self.flashlight_angle)
-        self.model_matrix.add_scale(0.01, 0.01, 0.01)
-        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
-        self.sprite.draw(self.sprite_shader)
-        self.model_matrix.pop_matrix()
+        if self.collision:
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_hitmarker_color)
+            self.sprite_shader.set_diffuse_texture(0)
+            glActiveTexture(GL_TEXTURE1)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_hitmarker_alpha)
+            self.sprite_shader.set_alpha_texture(1)
+            self.sprite_shader.set_opacity(1.0)
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(self.view_matrix.eye.x - self.view_matrix.n.x, self.view_matrix.eye.y-0.01, self.view_matrix.eye.z-self.view_matrix.n.z)
+            self.model_matrix.add_scale(0.3, 0.3, 0.3)
+            self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+            self.sprite.draw(self.sprite_shader)
+            self.model_matrix.pop_matrix()
         glDisable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
 

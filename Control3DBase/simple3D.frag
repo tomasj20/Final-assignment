@@ -21,6 +21,15 @@ uniform float u_light_constant;
 uniform float u_light_linear;
 uniform float u_light_quad;
 
+uniform vec4 u_red_light_position;
+uniform vec4 u_red_light_direction;
+uniform vec4 u_red_light_color;
+uniform float u_red_light_cutoff;
+uniform float u_red_light_outer_cutoff;
+uniform float u_red_light_constant;
+uniform float u_red_light_linear;
+uniform float u_red_light_quad;
+
 uniform vec4 u_mat_diffuse;
 uniform vec4 u_mat_specular;
 uniform float u_mat_shiny;
@@ -72,36 +81,33 @@ vec4 calculate_other_light(vec4 mat_diffuse, vec4 mat_specular)
 	 the lighting computations for each object in the scene will be similar.
 	 */
 }
-vec4 calculate_light()
+vec4 calculate_red_light(vec4 mat_diffuse, vec4 mat_specular)
 {
-	/* Made the light position to be the same as the players position, but the y values is a bit higher up
-	and point the directional vector down to get a small light around the player*/
-	vec4 light_dir = normalize(u_light_position - v_position); //the vector pointing from the fragment to the light source.
+	/*same as with the player lantern light, only difference is that the flashlight position
+	is the same as the players position, and the direction of the flashlight is the view_matrix_n*/
+	vec4 red_light_dir = normalize(u_red_light_position - v_position);
 	//Theta is the angle between the Light_dir vector and the u_light_direction vector.
 	//The θ value should be smaller than Φ to be inside the spotlight.
-	float theta = dot(light_dir, normalize(u_light_direction));
-	float epsilon = u_light_cutoff - u_light_outer_cutoff;
+	float theta = dot(red_light_dir, normalize(u_red_light_direction));
+	float epsilon = u_red_light_cutoff - u_red_light_outer_cutoff;
 	//calculate the theta θ value and compare this with the cutoff ϕ
 	//value to determine if we're in or outside the spotlight:
-	float intensity = clamp((theta - u_light_outer_cutoff) / epsilon, 0.0, 1.0);
+	float intensity = clamp((theta - u_red_light_outer_cutoff) / epsilon, 0.0, 1.0);
 	vec4 f = normalize(u_eye_position - v_position);
-	vec4 fvh = normalize(light_dir + f);
-	float lambert = max(dot(v_normal, light_dir), 0.0);
+	vec4 fvh = normalize(red_light_dir + f);
+	float lambert = max(dot(v_normal, red_light_dir), 0.0);
 	float phong = max(dot(v_normal, fvh), 0.0);
-	float distance    = length(u_light_position - v_position);
-	//We can retrieve the distance term by calculating the difference vector between the fragment
-	//and the light source and take that resulting vector's length.
-	float attenuation = 1.0 / (u_light_constant + u_light_linear * distance + //reduce the intensity of light over the distance
-    		    			   u_light_quad * (distance * distance));
+	float distance    = length(u_red_light_position - v_position);
+	float attenuation = 1.0 / (u_red_light_constant + u_red_light_linear * distance +
+    		    			   u_red_light_quad * (distance * distance));
 	/*
 	Then we include this attenuation value in the lighting calculations
 	by multiplying the attenuation value with the ambient, diffuse and specular colors.
 	*/
-	vec4 u_light_color = attenuation *(intensity * u_light_color);
-	return u_light_color * texture2D(u_tex_diffuse, v_uv) * lambert
-			+ u_light_color * texture2D(u_tex_specular, v_uv) * pow(phong, u_mat_shiny)
-			+ (u_light_color * 0.01);
-
+	vec4 u_red_light_color = attenuation *(intensity * u_red_light_color);
+	return u_red_light_color * mat_diffuse * lambert
+			+ u_red_light_color * mat_specular * pow(phong, u_mat_shiny)
+			+ (u_red_light_color * 0.01);
 }
 
 void main(void)
@@ -117,6 +123,7 @@ void main(void)
 	gl_FragColor = mat_diffuse * mat_specular;
 	gl_FragColor += calculate_directional_light(mat_diffuse, mat_specular);
 	gl_FragColor += calculate_other_light(mat_diffuse, mat_specular);
+	gl_FragColor += calculate_red_light(mat_diffuse, mat_specular);
 	gl_FragColor.a = u_mat_diffuse.a;
 	//gl_FragColor += calculate_light();
 }

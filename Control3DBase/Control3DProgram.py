@@ -132,28 +132,27 @@ class GraphicsProgram3D:
         self.wall_list2 = [
             [11.1, 2.0, 1.5, 2, 3, 7.5],
             [5.1, 2.0, 1.5, 2, 3, 7.5],
-            [8.0232, 0.45, 4.1309, 0.8, 1.0, 1.0],
-            [8.2, 0.45, 1.4405, 0.8, 1.0, 1.2],
-            [5.85, 1.0, -3.25, 0.5, 2.0, 2.0],
-            [5.85, 1.0, -7.3, 0.5, 2.0, 3.25],
-            [4.85, 1.0, -9.0, 2.5, 2.0, 0.5],
-            [0.5, 1.0, -3.25, 10.2, 2.0, 0.5],
-            [-0.5, 1.0, -6.7, 8.2, 2.0, 0.5],
-            [3.7, 1.0, -7.6, 0.5, 2.0, 2.3],
-            [-4.6, 1.0, -4.975, 0.5, 2.0, 3.0],
-            [14.9, 0.5, -6, 2.5, 0.4, 5.5],
-            [8.1, 0.0, 1.0, 4.0, 1.0, 8.0],
-            [7.9, 0.0, -5.0, 8.0, 1.0, 8.0],
-            [1.0, 0.0, -5.0, 8.0, 1.0, 3.0]
+            [8.0232, 1.0, 4.1309, 0.8, 1.0, 1.0],
+            [8.2, 1.0, 1.4405, 0.8, 1.0, 1.2],
+            [5.85, 1.0, -3.25, 0.5, 3.0, 2.0],
+            [5.85, 1.0, -7.3, 0.5, 3.0, 3.25],
+            [4.85, 1.0, -9.0, 2.5, 3.0, 0.5],
+            [0.5, 1.0, -3.25, 10.2, 3.0, 0.5],
+            [-0.5, 1.0, -6.7, 8.2, 3.0, 0.5],
+            [3.7, 1.0, -7.6, 0.5, 3.0, 2.3],
+            [-4.6, 1.0, -4.975, 0.5, 3.0, 3.0],
+            [14.9, 1.0, -6, 3.0, 3.0, 6.0],
+            [9.1, 0.0, -2.0, 40.0, 1.0, 40.0],
+
         ]
 
         self.train_station = [
-            [5.85, 1.0, -3.25, 0.5, 2.0, 2.0],
-            [5.85, 1.0, -7.3, 0.5, 2.0, 3.25],
-            [4.85, 1.0, -9.0, 2.5, 2.0, 0.5],
-            [0.5, 1.0, -3.25, 10.2, 2.0, 0.5],
-            [-0.5, 1.0, -6.7, 8.2, 2.0, 0.5],
-            [3.7, 1.0, -7.6, 0.5, 2.0, 2.3],
+            [5.85, 1.5, -3.25, 0.5, 2.0, 2.0],
+            [5.85, 1.5, -7.3, 0.5, 2.0, 3.25],
+            [4.85, 1.5, -9.0, 2.5, 2.0, 0.5],
+            [0.5, 1.5, -3.25, 10.2, 2.0, 0.5],
+            [-0.5, 1.5, -6.7, 8.2, 2.0, 0.5],
+            [3.7, 1.5, -7.6, 0.5, 2.0, 2.3],
         ]
 
         self.close_walls = []
@@ -210,16 +209,17 @@ class GraphicsProgram3D:
                         self.close_walls.remove(item)
 
     def collison_check(self):
-        for item in self.close_walls:
+        for item in self.wall_list2:
             wall_min_x = item[0] - item[3] / 2
             wall_max_x = item[0] + item[3] / 2
             wall_max_y = item[1] + item[4] / 2
+            wall_min_y = item[1] - item[4] / 2
             wall_min_z = item[2] - item[5] / 2
             wall_max_z = item[2] + item[5] / 2
 
             if wall_max_x + 0.2 >= self.view_matrix.eye.x >= wall_max_x + 0.1:
                 if wall_min_z - 0.1 <= self.view_matrix.eye.z <= wall_max_z + 0.1:
-                    if wall_max_y > self.view_matrix.eye.y:
+                    if wall_max_y-0.1 > self.view_matrix.eye.y:
                         self.collisionRightWall = True
                         return True
             else:
@@ -227,7 +227,7 @@ class GraphicsProgram3D:
 
             if wall_min_x - 0.2 <= self.view_matrix.eye.x <= wall_min_x - 0.1:
                 if wall_min_z - 0.2 <= self.view_matrix.eye.z <= wall_max_z + 0.1:
-                    if wall_max_y > self.view_matrix.eye.y:
+                    if wall_max_y-0.1 > self.view_matrix.eye.y > wall_min_y:
                         self.collisionLeftWall = True
                         return True
             else:
@@ -235,7 +235,7 @@ class GraphicsProgram3D:
 
             if wall_min_z - 0.2 <= self.view_matrix.eye.z <= wall_min_z - 0.1:
                 if wall_min_x - 0.1 <= self.view_matrix.eye.x <= wall_max_x + 0.1:
-                    if wall_max_y > self.view_matrix.eye.y:
+                    if wall_max_y-0.1 > self.view_matrix.eye.y > wall_min_y:
                         self.collisionTopWall = True
                         return True
             else:
@@ -243,7 +243,7 @@ class GraphicsProgram3D:
 
             if wall_max_z + 0.2 >= self.view_matrix.eye.z >= wall_max_z + 0.1:
                 if wall_min_x - 0.1 <= self.view_matrix.eye.x <= wall_max_x + 0.1:
-                    if wall_max_y > self.view_matrix.eye.y:
+                    if wall_max_y-0.1 > self.view_matrix.eye.y > wall_min_y:
                         self.collisionBottomWall = True
                         return True
             else:
@@ -251,7 +251,7 @@ class GraphicsProgram3D:
 
             if wall_max_z + 0.2 >= self.view_matrix.eye.z >= wall_min_z - 0.1:
                 if wall_min_x - 0.1 <= self.view_matrix.eye.x <= wall_max_x + 0.1:
-                    if wall_max_y + 0.5 >= self.view_matrix.eye.y >= wall_max_y:
+                    if wall_max_y + 0.5 >= self.view_matrix.eye.y >= wall_max_y-0.1:
                         self.collisionUpWall = True
                         return True
             else:
@@ -282,6 +282,7 @@ class GraphicsProgram3D:
     def update(self):
         delta_time = self.clock.tick() / 1000.0
         gravity = 3 * delta_time
+        self.collison_check()
         if self.A_key_down:
             self.view_matrix.yaw(-150 * delta_time)
             self.flashlight_angle += -((5 * pi) / 6) * delta_time
@@ -298,14 +299,10 @@ class GraphicsProgram3D:
             self.view_matrix.slide(0, 0, -2.0 * delta_time)
         if self.SPACE_key_down:
             self.aiming = True
-
-
             self.fov -= self.fov - 0.75
         if not self.SPACE_key_down:
             self.aiming = False
             self.fov = pi / 2
-        #for enemy in self.enemy_list_lvl1:
-
 
         player = gameObject(self.view_matrix.eye, Point(0.5, 0.5, 0.5))
         for enemy in self.enemy_list_lvl1:
@@ -327,8 +324,6 @@ class GraphicsProgram3D:
                 shot = gameObject(self.view_matrix.eye, Point(0.01, 0.01, 0.01))
                 self.shot_list.append(shot)
 
-        if self.falling:
-            self.view_matrix.eye.y -= 3 * delta_time
         for shot in self.shot_list:
             shot.position += (Point(-self.view_matrix.n.x, 0, -self.view_matrix.n.z))
             updated_shot = gameObject(shot.position, shot.scale)
@@ -360,58 +355,58 @@ class GraphicsProgram3D:
 
         if self.UP_key_down:
             """Right side of wall"""
-            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionRightWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionRightWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionRightWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionRightWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
             """Left side of wall"""
 
-            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionLeftWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionLeftWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionLeftWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionLeftWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
             """Bottom side of wall"""
 
-            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionBottomWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionBottomWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionBottomWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionBottomWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
             """Top side of wall"""
 
-            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionTopWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionTopWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionTopWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionTopWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
         if self.health < 1001:
             self.health += 0.5
@@ -432,8 +427,10 @@ class GraphicsProgram3D:
         # print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
         self.collison_check()
         self.get_walls_closest()
-        if not self.collisionUpWall and not self.jumping:
+        if not self.collisionUpWall and not self.jumping and not self.collisionLeftWall and not self.collisionRightWall\
+                and not self.collisionTopWall and not self.collisionBottomWall:
             self.view_matrix.eye.y -= gravity
+
 
     def display(self):
         glEnable(GL_DEPTH_TEST)

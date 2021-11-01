@@ -123,7 +123,7 @@ void main(void)
 	gl_FragColor = mat_diffuse * mat_specular;
 	gl_FragColor += calculate_directional_light(mat_diffuse, mat_specular);
 	gl_FragColor += calculate_other_light(mat_diffuse, mat_specular);
-	gl_FragColor += calculate_red_light(mat_diffuse, mat_specular);
+	//gl_FragColor += calculate_red_light(mat_diffuse, mat_specular);
 	gl_FragColor.a = u_mat_diffuse.a;
 	//gl_FragColor += calculate_light();
 }

@@ -2,7 +2,7 @@ from math import *
 
 
 class gameObject:
-    def __init__(self, position, scale, hit_counter=0, speed = 0):
+    def __init__(self, position, scale, hit_counter=0, speed=0):
         self.position = position
         self.scale = scale
         self.max_x = position.x + (scale.x/2)

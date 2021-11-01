@@ -48,9 +48,9 @@ vec4 calculate_directional_light(vec4 mat_diffuse, vec4 mat_specular)
 	vec4 vh = normalize(light_direction + v);
 	float lambert = max(dot(v_normal, light_direction), 0.0);
 	float phong = max(dot(v_normal, vh), 0.0);
-	return u_normal_light_color * mat_diffuse * lambert
-			+ u_normal_light_color * mat_specular * pow(phong, u_mat_shiny)
-			+ (u_normal_light_color * 0.01);
+	return u_normal_light_color * mat_diffuse * lambert*0.05
+			+ u_normal_light_color * mat_specular * (pow(phong, u_mat_shiny)*0.05)
+			+ (u_normal_light_color * 0.00001);
 	/*
 	 Because all of the light rays are parallel,
 	 it makes no difference how each object is positioned in relation to the light source
@@ -70,9 +70,9 @@ vec4 calculate_other_light(vec4 mat_diffuse, vec4 mat_specular)
 	vec4 vh = normalize(light_direction + v);
 	float lambert = max(dot(v_normal, light_direction), 0.0);
 	float phong = max(dot(v_normal, vh), 0.0);
-	return u_normal_light_color * mat_diffuse * lambert
-			+ u_normal_light_color * mat_specular * pow(phong, u_mat_shiny)
-			+ (u_normal_light_color * 0.01);
+	return u_normal_light_color * mat_diffuse * lambert*0.05
+			+ u_normal_light_color * mat_specular * (pow(phong, u_mat_shiny)*0.05)
+			+ (u_normal_light_color * 0.00001);
 	/*
 	 Because all of the light rays are parallel,
 	 it makes no difference how each object is positioned in relation to the light source

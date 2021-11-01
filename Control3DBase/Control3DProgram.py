@@ -28,11 +28,8 @@ class GraphicsProgram3D:
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shooting = False
         """Sounds"""
-        self.crash_sound = pygame.mixer.Sound("sounds/scream.wav")
-        self.lvlup_sound = pygame.mixer.Sound("sounds/lvlcomplete.wav")
-        self.flashlight_click = pygame.mixer.Sound("sounds/flashlight.wav")
-        self.jumpscare = pygame.mixer.Sound("sounds/jumpscare.wav")
         self.hitmarker = pygame.mixer.Sound("sounds/hitmarker.wav")
+        self.heartbeat = pygame.mixer.Sound("sounds/heartbeat.wav")
 
         self.flashlight_angle = 3 * pi / 2  # To calculate flashlight yaw
         self.player_angle = 0
@@ -58,13 +55,6 @@ class GraphicsProgram3D:
         self.tex_id_brick_diff = self.load_texture("./textures/trainwall.jpg")
         self.tex_id_brick_spec = self.load_texture("./textures/trainwall.jpg")
 
-        """Ignore the name this is the start  up screen"""
-        self.tex_id_jumpscare_diffuse = self.load_texture("./textures/screen.png")
-        self.tex_id_jumpscare_specular = self.load_texture("./textures/screen.png")
-
-        self.tex_id_win_screen_diffuse = self.load_texture("./textures/winscreen.png")
-        self.tex_id_win_screen_specular = self.load_texture("./textures/winscreen.png")
-
         self.tex_id_train_diffuse = self.load_texture("./textures/train.png")
         self.tex_id_train_specular = self.load_texture("./textures/train.png")
 
@@ -77,8 +67,17 @@ class GraphicsProgram3D:
         self.tex_id_rail_dif = self.load_texture("./textures/rail.jpg")
         self.tex_id_rail_spec = self.load_texture("./textures/rail.jpg")
 
-        self.tex_id_car_dif = self.load_texture("./textures/car.png")
-        self.tex_id_car_spec = self.load_texture("./textures/car.png")
+        self.tex_id_truck_diffuse = self.load_texture("./textures/truck.png")
+        self.tex_id_truck_specular = self.load_texture("./textures/truck.png")
+
+        self.tex_id_creambrick_dif = self.load_texture("./textures/creambrick.jpg")
+        self.tex_id_creambrick_spec = self.load_texture("./textures/creambrick.jpg")
+
+        self.tex_id_brokenhouse_diff = self.load_texture("./textures/brokenhouse.jpg")
+        self.tex_id_brokenhouse_spec = self.load_texture("./textures/brokenhouse.jpg")
+
+        self.tex_id_stop_diffuse = self.load_texture("./textures/stop.png")
+        self.tex_id_stop_specular = self.load_texture("./textures/stop.png")
 
         self.tex_id_car1_dif = self.load_texture("./textures/car1.png")
         self.tex_id_car1_spec = self.load_texture("./textures/car1.png")
@@ -92,11 +91,8 @@ class GraphicsProgram3D:
         self.tex_id_building3_dif = self.load_texture("./textures/oldbuilding.jpg")
         self.tex_id_building3_spec = self.load_texture("./textures/oldbuilding.jpg")
 
-        self.tex_id_tunnel_dif = self.load_texture("./textures/tunnel2.jpg")
-        self.tex_id_tunnel_spec = self.load_texture("./textures/tunnel2.jpg")
-
-        self.tex_id_stop_diffuse = self.load_texture("./textures/stop.png")
-        self.tex_id_stop_specular = self.load_texture("./textures/stop.png")
+        self.tex_id_tunnel_dif = self.load_texture("./textures/tunnel1.jpg")
+        self.tex_id_tunnel_spec = self.load_texture("./textures/tunnel1.jpg")
 
         self.tex_id_cape_dif = self.load_texture("./textures/cape.png")
         self.tex_id_cape_spec = self.load_texture("./textures/cape.png")
@@ -109,6 +105,9 @@ class GraphicsProgram3D:
         self.tex_id_hitmarker_color = self.load_texture("./textures/hitmarker_color.png")
         self.tex_id_hitmarker_alpha = self.load_texture("./textures/hitmarker_alpha.png")
 
+        self.tex_id_low_health_color = self.load_texture("./textures/blood.png")
+        self.tex_id_low_health_alpha = self.load_texture("./textures/blood.png")
+
         self.projection_matrix = ProjectionMatrix()
         self.fov = pi / 2
         self.projection_matrix.set_perspective(pi / 2, 800 / 600, 0.5, 100)
@@ -119,17 +118,15 @@ class GraphicsProgram3D:
         self.clock = pygame.time.Clock()
 
         """Obj models"""
-        self.obj_model_flashlight = objloader.load_obj_file(sys.path[0] + '/objects/', 'gun.obj')
-        # self.obj_model_player = objloader.load_obj_file(sys.path[0] + '/objects/', 'bomber.obj')
-        self.obj_model_car = objloader.load_obj_file(sys.path[0] + '/objects/', 'car.obj')
+        self.obj_model_gun = objloader.load_obj_file(sys.path[0] + '/objects/', 'gun.obj')
+        self.obj_model_stop = objloader.load_obj_file(sys.path[0] + '/objects/', 'stop.obj')
+        self.obj_model_truck = objloader.load_obj_file(sys.path[0] + '/objects/', 'truck.obj')
         self.obj_model_car1 = objloader.load_obj_file(sys.path[0] + '/objects/', 'car1.obj')
         self.obj_model_train = objloader.load_obj_file(sys.path[0] + '/objects/', 'train.obj')
         self.obj_model_humvee = objloader.load_obj_file(sys.path[0] + '/objects/', 'humvee.obj')
         self.obj_model_station = objloader.load_obj_file(sys.path[0] + '/objects/', 'station.obj')
         self.obj_model_cape = objloader.load_obj_file(sys.path[0] + '/objects/', 'cape.obj')
         self.obj_model_fountain = objloader.load_obj_file(sys.path[0] + '/objects/', 'fountain.obj')
-        self.obj_model_building = objloader.load_obj_file(sys.path[0] + '/objects/', 'Old_Building.obj')
-        self.obj_model_stop = objloader.load_obj_file(sys.path[0] + '/objects/', 'stop.obj')
 
         """Walls: x, y, z positions, and x, y, z scale"""
         self.wall_list2 = [
@@ -143,13 +140,11 @@ class GraphicsProgram3D:
             [0.5, 1.0, -3.25, 10.2, 2.0, 0.5],
             [-0.5, 1.0, -6.7, 8.2, 2.0, 0.5],
             [3.7, 1.0, -7.6, 0.5, 2.0, 2.3],
-            [-4.6, 1.0, -4.975, 0.5, 3.0, 4.0],
+            [-4.6, 1.0, -4.975, 0.5, 2.0, 3.0],
             [14.9, 0.5, -6, 2.5, 0.4, 5.5],
             [8.1, 0.0, 1.0, 4.0, 1.0, 8.0],
             [7.9, 0.0, -5.0, 8.0, 1.0, 8.0],
-            [1.0, 0.0, -5.0, 8.0, 1.0, 3.0],
-            [3.0, 0.4, -3.9, 0.0017, 0.0017, 0.0017],
-            [3.0, 0.4, -6.1, 0.0017, 0.0017, 0.0017]
+            [1.0, 0.0, -5.0, 8.0, 1.0, 3.0]
         ]
 
         self.train_station = [
@@ -190,14 +185,15 @@ class GraphicsProgram3D:
         self.health = 1000
 
         self.sprite = Sprite()
-        # self.enemy = Enemy(Point(7, 0.5, -4))
+        #self.enemy = Enemy(Point(7, 0.5, -4))
         self.enemy_list_lvl1 = [
             gameObject(Point(7, 0.5, -4), Point(1, 1, 1), 0, 0.005),
             gameObject(Point(9.1, 0.5, -4.3), Point(1, 1, 1), 0, 0.002),
             gameObject(Point(3.3, 0.5, -4.2), Point(1, 1, 1), 0, 0.009),
             gameObject(Point(7.4, 0.5, -4.1), Point(1, 1, 1), 0, 0.007)
         ]
-        # self.enemy1 = Enemy(Point(10, 0.5, -10))
+        #self.enemy1 = Enemy(Point(10, 0.5, -10))
+
 
         self.collison_check()
         self.get_walls_closest()
@@ -281,6 +277,8 @@ class GraphicsProgram3D:
 
         return texid
 
+
+
     def update(self):
         delta_time = self.clock.tick() / 1000.0
         gravity = 3 * delta_time
@@ -301,18 +299,20 @@ class GraphicsProgram3D:
         if self.SPACE_key_down:
             self.aiming = True
 
+
             self.fov -= self.fov - 0.75
         if not self.SPACE_key_down:
             self.aiming = False
             self.fov = pi / 2
-        # for enemy in self.enemy_list_lvl1:
+        #for enemy in self.enemy_list_lvl1:
+
 
         player = gameObject(self.view_matrix.eye, Point(0.5, 0.5, 0.5))
         for enemy in self.enemy_list_lvl1:
             enemy.update(self.view_matrix.eye)
             if enemy.check_intersection(player):
                 self.health -= 1
-                print(self.health)
+                #print(self.health)
 
         # if self.lookUP:
         # self.view_matrix.pitch(-(pi/2)*delta_time)
@@ -328,7 +328,6 @@ class GraphicsProgram3D:
                 self.shot_list.append(shot)
 
         if self.falling:
-            pygame.mixer.Sound.play(self.crash_sound)
             self.view_matrix.eye.y -= 3 * delta_time
         for shot in self.shot_list:
             shot.position += (Point(-self.view_matrix.n.x, 0, -self.view_matrix.n.z))
@@ -342,13 +341,13 @@ class GraphicsProgram3D:
                         self.enemy_list_lvl1.remove(enemy)
                         self.collision = False
 
-                # print(self.hit_counter)
+                #print(self.hit_counter)
             if shot.position.x < -20 or shot.position.z < -20 or shot.position.x > 20 or shot.position.z > 20:
                 self.shot_list.remove(shot)
 
         if self.collision:
             self.counter += 1
-            # print(self.counter)
+            #print(self.counter)
         if self.counter > 10:
             self.collision = False
             self.counter = 0
@@ -361,61 +360,69 @@ class GraphicsProgram3D:
 
         if self.UP_key_down:
             """Right side of wall"""
-            if self.collisionRightWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionRightWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionRightWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionRightWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionRightWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
             """Left side of wall"""
 
-            if self.collisionLeftWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionLeftWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionLeftWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionLeftWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionLeftWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
             """Bottom side of wall"""
 
-            if self.collisionBottomWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionBottomWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionBottomWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionBottomWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionBottomWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
             """Top side of wall"""
 
-            if self.collisionTopWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(1 * delta_time, 0, 0)
 
-            if self.collisionTopWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
 
-            if self.collisionTopWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
+            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z <= 0 and self.view_matrix.n.x <= 0:
                 self.view_matrix.slide(-1 * delta_time, 0, 0)
 
-            if self.collisionTopWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
+            if self.collisionTopWall and self.collisionUpWall and self.view_matrix.n.z >= 0 and self.view_matrix.n.x >= 0:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
-
+        if self.health < 1001:
+            self.health += 0.5
+            #print(self.health)
         # print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
+        if self.health < 200:
+            pygame.mixer.Sound.play(self.heartbeat)
+        if self.health > 200:
+            pygame.mixer.Sound.stop(self.heartbeat)
+        #if self.health == 0:
+
         """If player is falling, the game ends"""
         if self.view_matrix.eye.y <= -4:
             pygame.quit()
@@ -473,17 +480,6 @@ class GraphicsProgram3D:
         self.shader.set_normal_light_color(Color(1.0, 1.0, 1.0))
         self.shader.set_other_light_direction(Point(-1.5, -1, -2))
 
-        self.shader.set_red_light_direction(self.view_matrix.n)
-        self.shader.set_red_light_color(Color(1.0, 0, 0))
-        self.shader.set_red_light_position(
-            Point(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z))
-        """cut off: calculate the cosine value based on an angle and pass the cosine result to the fragment shader."""
-        self.shader.set_red_light_cutoff(cos((40 + 6.5) * pi / 180))
-        self.shader.set_red_light_outer_cutoff(cos((40 + 11.5) * pi / 180))
-        self.shader.set_red_light_constant(1.0)
-        self.shader.set_red_light_linear(0.14)
-        self.shader.set_red_light_quad(0.07)
-
         """Drawing and some more drawing....."""
 
         glEnable(GL_TEXTURE_2D)
@@ -518,9 +514,9 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_emit(0.0)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(-4.6, 1.5, -4.975)
+        self.model_matrix.add_translation(-4.6, 1.0, -4.975)
         self.model_matrix.add_rotate_x(3 * pi / 2)
-        self.model_matrix.add_scale(0.5, 3.0, 4.0)
+        self.model_matrix.add_scale(0.5, 2.0, 3.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.cube.draw()
         self.model_matrix.pop_matrix()
@@ -651,6 +647,46 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_spec)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(13.5, 1.0, -7.1)
+        self.model_matrix.add_scale(0.5, 1.1, 1.9)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_brokenhouse_diff)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_brokenhouse_spec)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(10.0, 2.0, -8.6)
+        self.model_matrix.add_scale(7.8, 3, 2.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_dif)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_spec)
@@ -670,25 +706,6 @@ class GraphicsProgram3D:
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
 
-        """glEnable(GL_TEXTURE_2D)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_dif)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_spec)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.enemy1.position.x, self.enemy1.position.y, self.enemy1.position.z)
-        self.model_matrix.add_scale(1, 1, 1)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_cape.draw(self.shader)
-        self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
-        glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)"""
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
@@ -730,7 +747,7 @@ class GraphicsProgram3D:
         self.model_matrix.add_rotate_y(-self.flashlight_angle)
         self.model_matrix.add_scale(0.1, 0.1, 0.15)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_flashlight.draw(self.shader)
+        self.obj_model_gun.draw(self.shader)
         self.model_matrix.pop_matrix()
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
@@ -738,20 +755,20 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_car_dif)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_truck_diffuse)
         glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_car_spec)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_truck_specular)
         self.shader.set_use_texture(1.0)
         self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
         self.shader.set_material_shiny(10)
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_emit(0.0)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(8.0, 0.55, 4.0)
+        self.model_matrix.add_translation(8.7, 0.55, 1.5)
         self.model_matrix.add_rotate_y(pi)
-        self.model_matrix.add_scale(0.03, 0.07, 0.03)
+        self.model_matrix.add_scale(0.1, 0.1, 0.15)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_car.draw(self.shader)
+        self.obj_model_truck.draw(self.shader)
         self.model_matrix.pop_matrix()
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
@@ -768,7 +785,7 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_emit(0.0)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(4.5, 0.45, 1.0)
+        self.model_matrix.add_translation(4.2, 0.45, -0.7)
         self.model_matrix.add_rotate_y(pi)
         self.model_matrix.add_scale(0.8, 1.0, 1.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
@@ -810,7 +827,7 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_emit(0.0)
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(11.0, 1.0, -7.2)
+        self.model_matrix.add_translation(12.5, 1.0, -7.1)
         self.model_matrix.add_rotate_y(3 * pi / 2)
         self.model_matrix.add_scale(0.35, 0.4, 0.3)
         self.shader.set_model_matrix(self.model_matrix.matrix)
@@ -819,50 +836,6 @@ class GraphicsProgram3D:
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
-
-        glEnable(GL_TEXTURE_2D)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_building3_dif)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_building3_spec)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(9.0, 0.5, -12.0)
-        self.model_matrix.add_rotate_y(3 * pi / 2)
-        self.model_matrix.add_scale(0.01, 0.02, 0.01)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_building.draw(self.shader)
-        self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
-        glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)
-
-        glEnable(GL_TEXTURE_2D)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_station_dif)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_station_spec)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(11.5, 0.5, -4.5)
-        self.model_matrix.add_rotate_y(3 * pi / 2)
-        self.model_matrix.add_scale(0.15, 0.2, 0.15)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_station.draw(self.shader)
-        self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
-        glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)
-
-        """Halldors stuff"""
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
@@ -896,6 +869,28 @@ class GraphicsProgram3D:
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
 
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_station_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_station_spec)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(11.5, 0.5, -4.5)
+        self.model_matrix.add_rotate_y(3 * pi / 2)
+        self.model_matrix.add_scale(0.15, 0.2, 0.15)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.obj_model_station.draw(self.shader)
+        self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+
         glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
@@ -913,15 +908,34 @@ class GraphicsProgram3D:
             self.sprite_shader.set_alpha_texture(1)
             self.sprite_shader.set_opacity(1.0)
             self.model_matrix.push_matrix()
-            self.model_matrix.add_translation(self.view_matrix.eye.x - self.view_matrix.n.x,
-                                              self.view_matrix.eye.y - 0.01,
-                                              self.view_matrix.eye.z - self.view_matrix.n.z)
-            self.model_matrix.add_scale(0.3, 0.3, 0.3)
+            self.model_matrix.add_translation(self.view_matrix.eye.x - self.view_matrix.n.x, self.view_matrix.eye.y-0.01, self.view_matrix.eye.z-self.view_matrix.n.z)
+            self.model_matrix.add_rotate_y(-self.player_angle)
+            self.model_matrix.add_scale(0.1, 0.1, 0.1)
             self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
             self.sprite.draw(self.sprite_shader)
             self.model_matrix.pop_matrix()
-        glDisable(GL_BLEND)
+        glDisable(GL_DEPTH_TEST)
+
+
+        #glClear(GL_COLOR_BUFFER_BIT)
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_low_health_color)
+        self.sprite_shader.set_diffuse_texture(0)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_low_health_alpha)
+        if self.health < 200:
+            self.sprite_shader.set_alpha_texture(1)
+            self.sprite_shader.set_opacity(1.0)
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(self.view_matrix.eye.x - self.view_matrix.n.x, self.view_matrix.eye.y, self.view_matrix.eye.z - self.view_matrix.n.z)
+            self.model_matrix.add_rotate_y(-self.player_angle)
+            self.model_matrix.add_scale(3.0, 2.0, 3.0)
+            self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+            self.sprite.draw(self.sprite_shader)
+            self.model_matrix.pop_matrix()
         glDisable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
 
         pygame.display.flip()
 

@@ -56,15 +56,15 @@ class Shader3D:
         self.lightQuad = glGetUniformLocation(self.renderingProgramID, "u_light_quad")
         self.lightOuterCutoff  = glGetUniformLocation(self.renderingProgramID, "u_light_outer_cutoff")
 
-        self.redlightPosition = glGetUniformLocation(self.renderingProgramID, "u_red_position")
+        """self.redlightPosition = glGetUniformLocation(self.renderingProgramID, "u_red_light_position")
         #self.redlightActive = glGetUniformLocation(self.renderingProgramID, "use_flashlight")
-        self.redlightColor = glGetUniformLocation(self.renderingProgramID, "u_red_color")
-        self.redlightDirection = glGetUniformLocation(self.renderingProgramID, "u_red_direction")
-        self.redlightCutoff       = glGetUniformLocation(self.renderingProgramID, "u_red_cutoff")
-        self.redlightConst  = glGetUniformLocation(self.renderingProgramID, "u_red_constant")
-        self.redlightLinear    = glGetUniformLocation(self.renderingProgramID, "u_red_linear")
-        self.redlightQuad = glGetUniformLocation(self.renderingProgramID, "u_red_quad")
-        self.redlightOuterCutoff  = glGetUniformLocation(self.renderingProgramID, "u_red_outer_cutoff")
+        self.redlightColor = glGetUniformLocation(self.renderingProgramID, "u_red_light_color")
+        self.redlightDirection = glGetUniformLocation(self.renderingProgramID, "u_red_light_direction")
+        self.redlightCutoff       = glGetUniformLocation(self.renderingProgramID, "u_red_light_cutoff")
+        self.redlightConst  = glGetUniformLocation(self.renderingProgramID, "u_red_light_constant")
+        self.redlightLinear    = glGetUniformLocation(self.renderingProgramID, "u_red_light_linear")
+        self.redlightQuad = glGetUniformLocation(self.renderingProgramID, "u_red_light_quad")
+        self.redlightOuterCutoff  = glGetUniformLocation(self.renderingProgramID, "u_red_light_outer_cutoff")"""
 
 
         self.materialDiffuseLoc  = glGetUniformLocation(self.renderingProgramID, "u_mat_diffuse")

@@ -1,0 +1,16 @@
+# Blender MTL File: 'peterbilt_model.blend'
+# Material Count: 1
+
+newmtl veh_mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.227273 0.227273 0.227273
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump -bm 0.800000 C:\\Users\\efexan122\\Documents\\BlenDeR OFFiCE\\peter\\textures\\Peter_low_veh_mat_NormalOpenGL.png
+map_Kd C:\\Users\\efexan122\\Documents\\BlenDeR OFFiCE\\peter\\textures\\Peter_low_veh_mat_BaseColor.png
+map_Ns C:\\Users\\efexan122\\Documents\\BlenDeR OFFiCE\\peter\\textures\\Peter_low_veh_mat_Roughness.png
+refl C:\\Users\\efexan122\\Documents\\BlenDeR OFFiCE\\peter\\textures\\Peter_low_veh_mat_Metallic.png

@@ -174,6 +174,13 @@ class GraphicsProgram3D:
             [3.7, 1.5, -7.6, 0.5, 2.0, 2.3],
         ]
 
+        self.gaswalls = [
+            [13.24, 1.0, -7.1, 0.5, 1.1, 1.9],
+            [13.5, 1.0, -4.0, 0.5, 1.1, 1.9],
+            [11.9, 1.0, -2.6, 0.3, 1.1, 1.3],
+            [12.9, 1.0, -3.0, 1.8, 1.1, 0.5]
+        ]
+
 
         self.close_walls = []
 
@@ -468,7 +475,7 @@ class GraphicsProgram3D:
             quit()
             print("You died, don't walk away from the area")
             """Our functions must be called here in the update"""
-        # print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
+        print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
         self.collison_check()
         self.get_walls_closest()
         if not self.collisionUpWall and not self.jumping and not self.collisionLeftWall and not self.collisionRightWall\
@@ -633,6 +640,27 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_spec)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        for item in self.gaswalls:
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(item[0], item[1], item[2])
+            self.model_matrix.add_scale(item[3], item[4], item[5])
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.cube.draw()
+            self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_dif)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_spec)
@@ -711,7 +739,7 @@ class GraphicsProgram3D:
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
 
-        glEnable(GL_TEXTURE_2D)
+        """glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_dif)
         glActiveTexture(GL_TEXTURE1)
@@ -789,7 +817,7 @@ class GraphicsProgram3D:
         self.model_matrix.pop_matrix()
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)
+        glBindTexture(GL_TEXTURE_2D, -1)"""
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)

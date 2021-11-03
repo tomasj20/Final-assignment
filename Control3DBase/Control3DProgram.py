@@ -104,6 +104,9 @@ class GraphicsProgram3D:
         self.tex_id_fountain_dif = self.load_texture("./textures/fountain.png")
         self.tex_id_fountain_spec = self.load_texture("./textures/fountain.png")
 
+        self.tex_id_concrete_dif = self.load_texture("./textures/concrete.png")
+        self.tex_id_concrete_spec = self.load_texture("./textures/concrete.png")
+
         self.tex_id_skysphere = self.load_texture("./textures/skysphere.jpeg")
 
         self.tex_id_hitmarker_color = self.load_texture("./textures/hitmarker_color.png")
@@ -118,8 +121,8 @@ class GraphicsProgram3D:
         self.tex_id_gun1_color = self.load_texture("./textures/gun.png")
         self.tex_id_gun1_alpha = self.load_texture("./textures/gun.png")
 
-        self.tex_id_lvlcomplete_color = self.load_texture("./textures/lvlcleared.jpg")
-        self.tex_id_lvlcomplete_alpha = self.load_texture("./textures/lvlcleared.jpg")
+        self.tex_id_lvlcomplete_color = self.load_texture("./textures/lvlcleared.png")
+        self.tex_id_lvlcomplete_alpha = self.load_texture("./textures/lvlcleared.png")
 
 
         self.projection_matrix = ProjectionMatrix()
@@ -143,6 +146,7 @@ class GraphicsProgram3D:
         self.obj_model_station = objloader.load_obj_file(sys.path[0] + '/objects/', 'station.obj')
         self.obj_model_cape = objloader.load_obj_file(sys.path[0] + '/objects/', 'Zombie.obj')
         self.obj_model_fountain = objloader.load_obj_file(sys.path[0] + '/objects/', 'fountain.obj')
+        self.obj_model_concrete = objloader.load_obj_file(sys.path[0] + '/objects/', 'concrete.obj')
 
         """Walls: x, y, z positions, and x, y, z scale"""
         self.wall_list2 = [
@@ -186,10 +190,11 @@ class GraphicsProgram3D:
         ]
 
         self.stopwalls = [
-            [7.9, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
-            [7.2, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
-            [6.5, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
-            [9.5, 0.55, 3.5, 0.0015, 0.0015, 0.0015]
+            [7.9, 0.5, 5.0, 0.2, 0.4, 0.2],
+            [7.2, 0.5, 5.0, 0.2, 0.4, 0.2],
+            [8.7, 0.5, 5.0, 0.2, 0.4, 0.2],
+            [6.5, 0.5, 5.0, 0.2, 0.4, 0.2],
+            [9.5, 0.5, 5.0, 0.2, 0.4, 0.2]
         ]
 
 
@@ -1005,7 +1010,7 @@ class GraphicsProgram3D:
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(12.5, 1.0, -7.1)
         self.model_matrix.add_rotate_y(3 * pi / 2)
-        self.model_matrix.add_scale(0.35, 0.4, 0.3)
+        self.model_matrix.add_scale(0.349, 0.4, 0.3)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_humvee.draw(self.shader)
         self.model_matrix.pop_matrix()
@@ -1015,9 +1020,9 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_diffuse)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_concrete_dif)
         glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_specular)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_concrete_spec)
         self.shader.set_use_texture(1.0)
         self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
         self.shader.set_material_shiny(10)
@@ -1029,7 +1034,7 @@ class GraphicsProgram3D:
             self.model_matrix.add_rotate_y(pi)
             self.model_matrix.add_scale(item[3], item[4], item[5])
             self.shader.set_model_matrix(self.model_matrix.matrix)
-            self.obj_model_stop.draw(self.shader)
+            self.obj_model_concrete.draw(self.shader)
             self.model_matrix.pop_matrix()
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)

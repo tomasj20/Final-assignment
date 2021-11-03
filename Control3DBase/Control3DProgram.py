@@ -716,6 +716,27 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_spec)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        for item in self.gaswalls:
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(item[0], item[1], item[2])
+            self.model_matrix.add_scale(item[3], item[4], item[5])
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.cube.draw()
+            self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_dif)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_spec)
@@ -813,7 +834,6 @@ class GraphicsProgram3D:
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
-
 
         if self.lvl == 1:
             glEnable(GL_TEXTURE_2D)

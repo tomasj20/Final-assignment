@@ -82,6 +82,9 @@ class GraphicsProgram3D:
         self.tex_id_stop_diffuse = self.load_texture("./textures/stop.png")
         self.tex_id_stop_specular = self.load_texture("./textures/stop.png")
 
+        self.tex_id_bomba_diffuse = self.load_texture("./textures/bomba.jpg")
+        self.tex_id_bomba_specular = self.load_texture("./textures/bomba.jpg")
+
         self.tex_id_car1_dif = self.load_texture("./textures/car1.png")
         self.tex_id_car1_spec = self.load_texture("./textures/car1.png")
 
@@ -103,7 +106,7 @@ class GraphicsProgram3D:
         self.tex_id_fountain_dif = self.load_texture("./textures/fountain.png")
         self.tex_id_fountain_spec = self.load_texture("./textures/fountain.png")
 
-        self.tex_id_skysphere = self.load_texture("./textures/skysphere.jpeg")
+        self.tex_id_skysphere = self.load_texture("./textures/skysphere.jpg")
 
         self.tex_id_hitmarker_color = self.load_texture("./textures/hitmarker_color.png")
         self.tex_id_hitmarker_alpha = self.load_texture("./textures/hitmarker_alpha.png")
@@ -179,6 +182,13 @@ class GraphicsProgram3D:
             [13.5, 1.0, -4.0, 0.5, 1.1, 1.9],
             [11.9, 1.0, -2.6, 0.3, 1.1, 1.3],
             [12.9, 1.0, -3.0, 1.8, 1.1, 0.5]
+        ]
+
+        self.stopwalls = [
+            [7.9, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
+            [7.2, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
+            [6.5, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
+            [9.5, 0.55, 3.5, 0.0015, 0.0015, 0.0015]
         ]
 
 
@@ -475,7 +485,7 @@ class GraphicsProgram3D:
             quit()
             print("You died, don't walk away from the area")
             """Our functions must be called here in the update"""
-        print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
+        #print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
         self.collison_check()
         self.get_walls_closest()
         if not self.collisionUpWall and not self.jumping and not self.collisionLeftWall and not self.collisionRightWall\
@@ -640,27 +650,6 @@ class GraphicsProgram3D:
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_dif)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_spec)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        for item in self.gaswalls:
-            self.model_matrix.push_matrix()
-            self.model_matrix.add_translation(item[0], item[1], item[2])
-            self.model_matrix.add_scale(item[3], item[4], item[5])
-            self.shader.set_model_matrix(self.model_matrix.matrix)
-            self.cube.draw()
-            self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
-        glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)
-
-        glEnable(GL_TEXTURE_2D)
-        glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_dif)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_roadintersection_spec)
@@ -752,6 +741,26 @@ class GraphicsProgram3D:
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(10.0, 2.0, -8.6)
         self.model_matrix.add_scale(7.8, 3, 2.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_bomba_diffuse)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_bomba_specular)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(8.5, 2.0, 10.0)
+        self.model_matrix.add_scale(20.0, 15, 0.5)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.cube.draw()
         self.model_matrix.pop_matrix()
@@ -936,6 +945,28 @@ class GraphicsProgram3D:
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_humvee.draw(self.shader)
         self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_diffuse)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_specular)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        for item in self.stopwalls:
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(item[0], item[1], item[2])
+            self.model_matrix.add_rotate_y(pi)
+            self.model_matrix.add_scale(item[3], item[4], item[5])
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.obj_model_stop.draw(self.shader)
+            self.model_matrix.pop_matrix()
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)

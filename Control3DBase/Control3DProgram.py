@@ -82,6 +82,9 @@ class GraphicsProgram3D:
         self.tex_id_stop_diffuse = self.load_texture("./textures/stop.png")
         self.tex_id_stop_specular = self.load_texture("./textures/stop.png")
 
+        self.tex_id_bomba_diffuse = self.load_texture("./textures/bomba.jpg")
+        self.tex_id_bomba_specular = self.load_texture("./textures/bomba.jpg")
+
         self.tex_id_car1_dif = self.load_texture("./textures/car1.png")
         self.tex_id_car1_spec = self.load_texture("./textures/car1.png")
 
@@ -103,7 +106,7 @@ class GraphicsProgram3D:
         self.tex_id_fountain_dif = self.load_texture("./textures/fountain.png")
         self.tex_id_fountain_spec = self.load_texture("./textures/fountain.png")
 
-        self.tex_id_skysphere = self.load_texture("./textures/skysphere.jpeg")
+        self.tex_id_skysphere = self.load_texture("./textures/skysphere.jpg")
 
         self.tex_id_hitmarker_color = self.load_texture("./textures/hitmarker_color.png")
         self.tex_id_hitmarker_alpha = self.load_texture("./textures/hitmarker_alpha.png")
@@ -116,9 +119,6 @@ class GraphicsProgram3D:
 
         self.tex_id_gun1_color = self.load_texture("./textures/gun.png")
         self.tex_id_gun1_alpha = self.load_texture("./textures/gun.png")
-
-        self.tex_id_lvlcomplete_color = self.load_texture("./textures/lvlcleared.jpg")
-        self.tex_id_lvlcomplete_alpha = self.load_texture("./textures/lvlcleared.jpg")
 
 
         self.projection_matrix = ProjectionMatrix()
@@ -184,6 +184,13 @@ class GraphicsProgram3D:
             [12.9, 1.0, -3.0, 1.8, 1.1, 0.5]
         ]
 
+        self.stopwalls = [
+            [7.9, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
+            [7.2, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
+            [6.5, 0.55, 3.5, 0.0015, 0.0015, 0.0015],
+            [9.5, 0.55, 3.5, 0.0015, 0.0015, 0.0015]
+        ]
+
 
         self.close_walls = []
 
@@ -214,29 +221,20 @@ class GraphicsProgram3D:
         self.health = 1000
         self.sphere_collision = False
         self.angle = pi
-        self.lvl_complete = False
-        self.lvl_complete_counter = 0
-        self.lvl = 1
+        self.guns = [
+            [self.obj_model_gun, self.tex_id_gun_diffuse, self.tex_id_gun_specular],
+            [self.obj_model_AR, self.tex_id_AR_diffuse, self.tex_id_AR_specular]
+        ]
 
         self.activeGun = 0
 
         self.sprite = Sprite()
         #self.enemy = Enemy(Point(7, 0.5, -4))
         self.enemy_list_lvl1 = [
-            gameObject(Point(7, 0.5, -4), Point(0.2, 1, 0.2), 0, 0.005),
-            gameObject(Point(9.1, 0.5, -4.3), Point(0.2, 1, 0.2), 0, 0.002),
-            gameObject(Point(3.3, 0.5, -4.2), Point(0.2, 1, 0.2), 0, 0.009),
-            gameObject(Point(7.4, 0.5, -4.1), Point(0.2, 1, 0.2), 0, 0.007)
-        ]
-        self.enemy_list_lvl2 = [
-            gameObject(Point(7, 0.5, -4), Point(0.2, 1, 0.2), 0, 0.005),
-            gameObject(Point(9.1, 0.5, -4.3), Point(0.2, 1, 0.2), 0, 0.006),
-            gameObject(Point(3.3, 0.5, -4.2), Point(0.2, 1, 0.2), 0, 0.02),
-            gameObject(Point(6.4, 0.5, -4.1), Point(0.2, 1, 0.2), 0, 0.015),
-            gameObject(Point(20, 0.5, -4), Point(0.2, 1, 0.2), 0, 0.01),
-            gameObject(Point(-20, 0.5, -4.3), Point(0.2, 1, 0.2), 0, 0.007),
-            gameObject(Point(8, 0.5, -20), Point(0.2, 1, 0.2), 0, 0.015),
-            gameObject(Point(6.4, 0.5, 20), Point(0.2, 1, 0.2), 0, 0.004)
+            gameObject(Point(7, 0.5, -4), Point(1, 1, 1), 0, 0.005),
+            gameObject(Point(9.1, 0.5, -4.3), Point(1, 1, 1), 0, 0.002),
+            gameObject(Point(3.3, 0.5, -4.2), Point(1, 1, 1), 0, 0.009),
+            gameObject(Point(7.4, 0.5, -4.1), Point(1, 1, 1), 0, 0.007)
         ]
         #self.enemy1 = Enemy(Point(10, 0.5, -10))
 
@@ -353,16 +351,10 @@ class GraphicsProgram3D:
             self.fov = pi / 2
         player = gameObject(self.view_matrix.eye, Point(0.5, 0.5, 0.5))
         sphere = Sphere(Point(8.51, 1.0, -5.15), 1)
-        if self.lvl == 1:
-            for enemy in self.enemy_list_lvl1:
-                enemy.update(self.view_matrix.eye)
-                if enemy.check_intersection(player):
-                    self.health -= 1
-        if self.lvl == 2:
-            for enemy in self.enemy_list_lvl2:
-                enemy.update(self.view_matrix.eye)
-                if enemy.check_intersection(player):
-                    self.health -= 1
+        for enemy in self.enemy_list_lvl1:
+            enemy.update(self.view_matrix.eye)
+            if enemy.check_intersection(player):
+                self.health -= 1
         if sphere.check_sphere_intersection(self.view_matrix.eye):
             self.sphere_collision = True
         else:
@@ -394,50 +386,24 @@ class GraphicsProgram3D:
             pygame.mixer.Sound.play(self.gunshot, 0)
             if self.activeGun == 0:
                 shot.position += (Point(-self.view_matrix.n.x/2, 0, -self.view_matrix.n.z/2))
-            if self.activeGun == 1:
-                shot.position += (Point(-self.view_matrix.n.x/2, 0, -self.view_matrix.n.z/2))
             updated_shot = gameObject(shot.position, shot.scale)
-            if self.lvl == 1:
-                for enemy in self.enemy_list_lvl1:
-                    if updated_shot.check_intersection(enemy):
-                        if self.activeGun == 0:
-                            enemy.hit_counter += 0.1
-                        if self.activeGun == 1:
-                            enemy.hit_counter += 1
-                        pygame.mixer.Sound.play(self.hitmarker, 0)
-                        #self.shot_list.remove(updated_shot.position)
-                        self.collision = True
-                        if enemy.hit_counter > 10:
-                            self.enemy_list_lvl1.remove(enemy)
-                            self.collision = False
-            if self.lvl == 2:
-                for enemy in self.enemy_list_lvl2:
-                    if updated_shot.check_intersection(enemy):
-                        if self.activeGun == 0:
-                            enemy.hit_counter += 0.1
-                        if self.activeGun == 1:
-                            enemy.hit_counter += 1
-                        pygame.mixer.Sound.play(self.hitmarker, 0)
-                        # self.shot_list.remove(updated_shot.position)
-                        self.collision = True
-                        if enemy.hit_counter > 10:
-                            self.enemy_list_lvl2.remove(enemy)
-                            self.collision = False
+            for enemy in self.enemy_list_lvl1:
+                if updated_shot.check_intersection(enemy):
+                    if self.activeGun == 0:
+                        enemy.hit_counter += 0.5
+                    pygame.mixer.Sound.play(self.hitmarker, 0)
+                    self.collision = True
+                    if enemy.hit_counter > 10:
+                        self.enemy_list_lvl1.remove(enemy)
+                        self.collision = False
 
                 #print(self.hit_counter)
             if shot.position.x < -20 or shot.position.z < -20 or shot.position.x > 20 or shot.position.z > 20:
                 self.shot_list.remove(shot)
-        if len(self.enemy_list_lvl1) < 1 and self.lvl == 1:
-            self.lvl_complete = True
-            self.lvl_complete_counter += 1
-
-        if self.lvl_complete_counter > 300:
-            self.lvl_complete = False
-            self.lvl = 2
-            self.lvl_complete_counter = 0
 
         if self.collision:
             self.counter += 1
+            #print(self.counter)
         if self.counter > 10:
             self.collision = False
             self.counter = 0
@@ -505,17 +471,21 @@ class GraphicsProgram3D:
                 self.view_matrix.slide(0, 0, -1 * delta_time)
         if self.health < 1001:
             self.health += 0.5
+            #print(self.health)
+        # print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
         if self.health < 200:
             pygame.mixer.Sound.play(self.heartbeat)
         if self.health > 200:
             pygame.mixer.Sound.stop(self.heartbeat)
-
+        #if self.health == 0:
+        #print(self.view_matrix.eye.x, self.view_matrix.eye.z)
         """If player is falling, the game ends"""
         if self.view_matrix.eye.y <= -4:
             pygame.quit()
             quit()
             print("You died, don't walk away from the area")
             """Our functions must be called here in the update"""
+        #print(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
         self.collison_check()
         self.get_walls_closest()
         if not self.collisionUpWall and not self.jumping and not self.collisionLeftWall and not self.collisionRightWall\
@@ -574,23 +544,7 @@ class GraphicsProgram3D:
         self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
         self.sprite.draw(self.sprite_shader)
         self.model_matrix.pop_matrix()
-        if self.lvl_complete:
-            glActiveTexture(GL_TEXTURE0)
-            glBindTexture(GL_TEXTURE_2D, self.tex_id_lvlcomplete_color)
-            self.sprite_shader.set_diffuse_texture(0)
-            glActiveTexture(GL_TEXTURE1)
-            glBindTexture(GL_TEXTURE_2D, self.tex_id_lvlcomplete_alpha)
-            self.sprite_shader.set_alpha_texture(1)
-            self.sprite_shader.set_opacity(1.0)
-            self.model_matrix.push_matrix()
-            self.model_matrix.add_translation(self.view_matrix.eye.x-self.view_matrix.n.x, self.view_matrix.eye.y,
-                                              self.view_matrix.eye.z-self.view_matrix.n.z)
-            self.model_matrix.add_rotate_y(-self.player_angle)
-            self.model_matrix.add_scale(3.0, 3.0, 3.0)
-            self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
-            self.sprite.draw(self.sprite_shader)
-            self.model_matrix.pop_matrix()
-            glDisable(GL_TEXTURE_2D)
+        glDisable(GL_TEXTURE_2D)
 
 
         self.shader.use()
@@ -684,27 +638,6 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
         self.shader.set_material_emit(0.0)
         for item in self.train_station:
-            self.model_matrix.push_matrix()
-            self.model_matrix.add_translation(item[0], item[1], item[2])
-            self.model_matrix.add_scale(item[3], item[4], item[5])
-            self.shader.set_model_matrix(self.model_matrix.matrix)
-            self.cube.draw()
-            self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
-        glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)
-
-        glEnable(GL_TEXTURE_2D)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_dif)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_creambrick_spec)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        for item in self.gaswalls:
             self.model_matrix.push_matrix()
             self.model_matrix.add_translation(item[0], item[1], item[2])
             self.model_matrix.add_scale(item[3], item[4], item[5])
@@ -815,49 +748,46 @@ class GraphicsProgram3D:
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
 
-        if self.lvl == 1:
-            glEnable(GL_TEXTURE_2D)
-            glActiveTexture(GL_TEXTURE0)
-            glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_dif)
-            glActiveTexture(GL_TEXTURE1)
-            glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_spec)
-            for enemy in self.enemy_list_lvl1:
-                self.shader.set_use_texture(1.0)
-                self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-                self.shader.set_material_shiny(10)
-                self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-                self.shader.set_material_emit(0.0)
-                self.model_matrix.push_matrix()
-                self.model_matrix.add_translation(enemy.position.x, enemy.position.y, enemy.position.z)
-                self.model_matrix.add_scale(0.3, 0.3, 0.3)
-                self.shader.set_model_matrix(self.model_matrix.matrix)
-                self.obj_model_cape.draw(self.shader)
-                self.model_matrix.pop_matrix()
-                self.shader.set_use_texture(0.0)
-            glDisable(GL_TEXTURE_2D)
-            glBindTexture(GL_TEXTURE_2D, -1)
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_bomba_diffuse)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_bomba_specular)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(8.5, 2.0, 10.0)
+        self.model_matrix.add_scale(20.0, 15, 0.5)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
 
-        if self.lvl == 2:
-            glEnable(GL_TEXTURE_2D)
-            glActiveTexture(GL_TEXTURE0)
-            glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_dif)
-            glActiveTexture(GL_TEXTURE1)
-            glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_spec)
-            for enemy in self.enemy_list_lvl2:
-                self.shader.set_use_texture(1.0)
-                self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-                self.shader.set_material_shiny(10)
-                self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-                self.shader.set_material_emit(0.0)
-                self.model_matrix.push_matrix()
-                self.model_matrix.add_translation(enemy.position.x, enemy.position.y, enemy.position.z)
-                self.model_matrix.add_scale(0.3, 0.3, 0.3)
-                self.shader.set_model_matrix(self.model_matrix.matrix)
-                self.obj_model_cape.draw(self.shader)
-                self.model_matrix.pop_matrix()
-                self.shader.set_use_texture(0.0)
-            glDisable(GL_TEXTURE_2D)
-            glBindTexture(GL_TEXTURE_2D, -1)
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_dif)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_cape_spec)
+        for enemy in self.enemy_list_lvl1:
+            self.shader.set_use_texture(1.0)
+            self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+            self.shader.set_material_shiny(10)
+            self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+            self.shader.set_material_emit(0.0)
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(enemy.position.x, enemy.position.y, enemy.position.z)
+            self.model_matrix.add_scale(0.3, 0.3, 0.3)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.obj_model_cape.draw(self.shader)
+            self.model_matrix.pop_matrix()
+            self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
 
 
         glEnable(GL_TEXTURE_2D)
@@ -923,7 +853,7 @@ class GraphicsProgram3D:
                 self.model_matrix.add_translation(self.view_matrix.eye.x +0.1, self.view_matrix.eye.y - 0.3,
                                                   self.view_matrix.eye.z)
             if self.aiming:
-                self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y - 0.2,
+                self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y - 0.1,
                                                   self.view_matrix.eye.z)
             self.model_matrix.add_rotate_y(-self.flashlight_angle)
             self.model_matrix.add_scale(0.1, 0.1, 0.15)
@@ -1015,6 +945,28 @@ class GraphicsProgram3D:
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.obj_model_humvee.draw(self.shader)
         self.model_matrix.pop_matrix()
+        self.shader.set_use_texture(0.0)
+        glDisable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, -1)
+
+        glEnable(GL_TEXTURE_2D)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_diffuse)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_stop_specular)
+        self.shader.set_use_texture(1.0)
+        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+        self.shader.set_material_shiny(10)
+        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+        self.shader.set_material_emit(0.0)
+        for item in self.stopwalls:
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(item[0], item[1], item[2])
+            self.model_matrix.add_rotate_y(pi)
+            self.model_matrix.add_scale(item[3], item[4], item[5])
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.obj_model_stop.draw(self.shader)
+            self.model_matrix.pop_matrix()
         self.shader.set_use_texture(0.0)
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)

@@ -56,17 +56,6 @@ class Shader3D:
         self.lightQuad = glGetUniformLocation(self.renderingProgramID, "u_light_quad")
         self.lightOuterCutoff  = glGetUniformLocation(self.renderingProgramID, "u_light_outer_cutoff")
 
-        """self.redlightPosition = glGetUniformLocation(self.renderingProgramID, "u_red_light_position")
-        #self.redlightActive = glGetUniformLocation(self.renderingProgramID, "use_flashlight")
-        self.redlightColor = glGetUniformLocation(self.renderingProgramID, "u_red_light_color")
-        self.redlightDirection = glGetUniformLocation(self.renderingProgramID, "u_red_light_direction")
-        self.redlightCutoff       = glGetUniformLocation(self.renderingProgramID, "u_red_light_cutoff")
-        self.redlightConst  = glGetUniformLocation(self.renderingProgramID, "u_red_light_constant")
-        self.redlightLinear    = glGetUniformLocation(self.renderingProgramID, "u_red_light_linear")
-        self.redlightQuad = glGetUniformLocation(self.renderingProgramID, "u_red_light_quad")
-        self.redlightOuterCutoff  = glGetUniformLocation(self.renderingProgramID, "u_red_light_outer_cutoff")"""
-
-
         self.materialDiffuseLoc  = glGetUniformLocation(self.renderingProgramID, "u_mat_diffuse")
         self.materialSpecularLoc = glGetUniformLocation(self.renderingProgramID, "u_mat_specular")
         self.materialShinyLoc    = glGetUniformLocation(self.renderingProgramID, "u_mat_shiny")
@@ -128,29 +117,6 @@ class Shader3D:
     def set_normal_light_color(self, rgb):
         glUniform4f(self.normalLightColor, rgb.r, rgb.g, rgb.b, 1.0)
 
-    def set_red_light_position(self, pos):
-        glUniform4f(self.redlightPosition, pos.x, pos.y, pos.z, 1.0)
-
-    def set_red_light_direction(self, pos):
-        glUniform4f(self.redlightDirection, pos.x, pos.y, pos.z, 1.0)
-
-    def set_red_light_color(self, rgb):
-        glUniform4f(self.redlightColor, rgb.r, rgb.g, rgb.b, 1.0)
-
-    def set_red_light_cutoff(self, f):
-        glUniform1f(self.redlightCutoff, f)
-
-    def set_red_light_outer_cutoff(self, f):
-        glUniform1f(self.redlightOuterCutoff, f)
-
-    def set_red_light_constant(self, f):
-        glUniform1f(self.redlightConst, f)
-
-    def set_red_light_linear(self, f):
-        glUniform1f(self.redlightLinear, f)
-
-    def set_red_light_quad(self, f):
-        glUniform1f(self.redlightQuad, f)
 
 
     def set_material_shiny(self, s):
@@ -174,10 +140,6 @@ class Shader3D:
 
     def set_material_specular(self, color):
         glUniform4f(self.materialSpecularLoc, color.r, color.g, color.b, 1.0)
-
-    def set_active_flashlight(self, f):
-        glUniform1f(self.flashlightActive, f)
-
 
 
 class SpriteShader:

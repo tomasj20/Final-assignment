@@ -15,6 +15,7 @@ class gameObject:
         self.distance_z = 0
         self.hit_counter = hit_counter
         self.speed = speed
+        #self.sphere = sphere
 #(self.min_y <= other.max_y and self.max_y >= other.min_y) and \
     def update(self, player_pos):
         self.distance_x = sqrt(pow(player_pos.x - self.position.x, 2))
@@ -49,6 +50,20 @@ class gameObject:
         else:
             return False
 
+class Sphere:
+    def __init__(self, position, radius):
+        self.position = position
+        self.radius = radius
+
+    def check_sphere_intersection(self, other):
+        distance = sqrt((other.x - self.position.x) * (other.x - self.position.x) +
+                           (other.y - self.position.y) * (other.y - self.position.y) +
+                           (other.z - self.position.z) * (other.z - self.position.z))
+        #sphere.radius = 1
+        if distance < self.radius:
+            return True
+        else:
+            return False
 
 
 """class Enemy:

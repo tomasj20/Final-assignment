@@ -14,6 +14,7 @@ from gameobject import *
 
 class GraphicsProgram3D:
     def __init__(self):
+        pygame.mixer.init(48000, -16, 1, 2048)
         pygame.init()
         pygame.display.set_mode((800, 600), pygame.OPENGL | pygame.DOUBLEBUF)
         self.sprite_shader = SpriteShader()
@@ -30,6 +31,8 @@ class GraphicsProgram3D:
         """Sounds"""
         self.hitmarker = pygame.mixer.Sound("sounds/hitmarker.wav")
         self.heartbeat = pygame.mixer.Sound("sounds/heartbeat.wav")
+        self.gunshot = pygame.mixer.Sound("sounds/gunshot.wav")
+        self.gunshot.set_volume(0.1)
 
         self.flashlight_angle = 3 * pi / 2  # To calculate flashlight yaw
         self.player_angle = 0
@@ -40,8 +43,11 @@ class GraphicsProgram3D:
         self.shader.set_specular_texture(1)
         self.tex_id_wall_specular = self.load_texture("./textures/window_texture.jpeg")
 
-        self.tex_id_flashlight_diffuse = self.load_texture("./textures/rifle3.png")
-        self.tex_id_flashlight_specular = self.load_texture("./textures/rifle3.png")
+        self.tex_id_gun_diffuse = self.load_texture("./textures/handgun_S.jpg")
+        self.tex_id_gun_specular = self.load_texture("./textures/handgun_S.jpg")
+
+        self.tex_id_AR_diffuse = self.load_texture("./textures/AR.jpg")
+        self.tex_id_AR_specular = self.load_texture("./textures/AR.jpg")
 
         self.tex_id_building_diffuse = self.load_texture("./textures/building.jpg")
         self.tex_id_building_specular = self.load_texture("./textures/building.jpg")
@@ -94,8 +100,8 @@ class GraphicsProgram3D:
         self.tex_id_tunnel_dif = self.load_texture("./textures/tunnel1.jpg")
         self.tex_id_tunnel_spec = self.load_texture("./textures/tunnel1.jpg")
 
-        self.tex_id_cape_dif = self.load_texture("./textures/cape.png")
-        self.tex_id_cape_spec = self.load_texture("./textures/cape.png")
+        self.tex_id_cape_dif = self.load_texture("./textures/zombie.png")
+        self.tex_id_cape_spec = self.load_texture("./textures/zombie.png")
 
         self.tex_id_fountain_dif = self.load_texture("./textures/fountain.png")
         self.tex_id_fountain_spec = self.load_texture("./textures/fountain.png")
@@ -108,6 +114,13 @@ class GraphicsProgram3D:
         self.tex_id_low_health_color = self.load_texture("./textures/blood.png")
         self.tex_id_low_health_alpha = self.load_texture("./textures/blood.png")
 
+        self.tex_id_gun_color = self.load_texture("./textures/gun1.png")
+        self.tex_id_gun_alpha = self.load_texture("./textures/gun1.png")
+
+        self.tex_id_gun1_color = self.load_texture("./textures/gun.png")
+        self.tex_id_gun1_alpha = self.load_texture("./textures/gun.png")
+
+
         self.projection_matrix = ProjectionMatrix()
         self.fov = pi / 2
         self.projection_matrix.set_perspective(pi / 2, 800 / 600, 0.5, 100)
@@ -118,22 +131,27 @@ class GraphicsProgram3D:
         self.clock = pygame.time.Clock()
 
         """Obj models"""
-        self.obj_model_gun = objloader.load_obj_file(sys.path[0] + '/objects/', 'gun.obj')
+        #self.obj_model_gun = objloader.load_obj_file(sys.path[0] + '/objects/', 'SubRifle.obj')
+        self.obj_model_gun = objloader.load_obj_file(sys.path[0] + '/objects/', 'handgun.obj')
+        self.obj_model_AR = objloader.load_obj_file(sys.path[0] + '/objects/', 'gun.obj')
         self.obj_model_stop = objloader.load_obj_file(sys.path[0] + '/objects/', 'stop.obj')
         self.obj_model_truck = objloader.load_obj_file(sys.path[0] + '/objects/', 'truck.obj')
         self.obj_model_car1 = objloader.load_obj_file(sys.path[0] + '/objects/', 'car1.obj')
         self.obj_model_train = objloader.load_obj_file(sys.path[0] + '/objects/', 'train.obj')
         self.obj_model_humvee = objloader.load_obj_file(sys.path[0] + '/objects/', 'humvee.obj')
         self.obj_model_station = objloader.load_obj_file(sys.path[0] + '/objects/', 'station.obj')
-        self.obj_model_cape = objloader.load_obj_file(sys.path[0] + '/objects/', 'cape.obj')
+        self.obj_model_cape = objloader.load_obj_file(sys.path[0] + '/objects/', 'Zombie.obj')
         self.obj_model_fountain = objloader.load_obj_file(sys.path[0] + '/objects/', 'fountain.obj')
 
         """Walls: x, y, z positions, and x, y, z scale"""
         self.wall_list2 = [
             [11.1, 2.0, 1.5, 2, 3, 7.5],
             [5.1, 2.0, 1.5, 2, 3, 7.5],
-            [8.0232, 1.0, 4.1309, 0.8, 1.0, 1.0],
-            [8.2, 1.0, 1.4405, 0.8, 1.0, 1.2],
+            [8.9, 1.0, 2.87, 0.8, 1.0, 2.8],
+            [7.43, 1.0, -0.43, 0.8, 1.0, 1.2],
+            [0.33, 1.0, -5.0, 8.0, 1.5, 1.5],
+            [3.04, 1.0, -6.2, 0.5, 1.5, 0.5],
+            [3.04, 1.0, -4.0, 0.5, 1.5, 0.5],
             [5.85, 1.0, -3.25, 0.5, 3.0, 2.0],
             [5.85, 1.0, -7.3, 0.5, 3.0, 3.25],
             [4.85, 1.0, -9.0, 2.5, 3.0, 0.5],
@@ -154,6 +172,7 @@ class GraphicsProgram3D:
             [-0.5, 1.5, -6.7, 8.2, 2.0, 0.5],
             [3.7, 1.5, -7.6, 0.5, 2.0, 2.3],
         ]
+
 
         self.close_walls = []
 
@@ -182,6 +201,14 @@ class GraphicsProgram3D:
         self.collision = False
         self.hit_counter = 0
         self.health = 1000
+        self.sphere_collision = False
+        self.angle = pi
+        self.guns = [
+            [self.obj_model_gun, self.tex_id_gun_diffuse, self.tex_id_gun_specular],
+            [self.obj_model_AR, self.tex_id_AR_diffuse, self.tex_id_AR_specular]
+        ]
+
+        self.activeGun = 0
 
         self.sprite = Sprite()
         #self.enemy = Enemy(Point(7, 0.5, -4))
@@ -282,6 +309,7 @@ class GraphicsProgram3D:
     def update(self):
         delta_time = self.clock.tick() / 1000.0
         gravity = 3 * delta_time
+        self.angle += 0.8 * delta_time
         self.collison_check()
         if self.A_key_down:
             self.view_matrix.yaw(-150 * delta_time)
@@ -295,7 +323,7 @@ class GraphicsProgram3D:
             self.fov -= 0.25 * delta_time
         if self.G_key_down:
             self.fov += 0.25 * delta_time
-        if self.UP_key_down and not self.collisionLeftWall and not self.collisionRightWall and not self.collisionTopWall and not self.collisionBottomWall:
+        if self.UP_key_down and not self.collisionLeftWall and not self.collisionRightWall and not self.collisionTopWall and not self.collisionBottomWall and not self.sphere_collision:
             self.view_matrix.slide(0, 0, -2.0 * delta_time)
         if self.SPACE_key_down:
             self.aiming = True
@@ -303,13 +331,34 @@ class GraphicsProgram3D:
         if not self.SPACE_key_down:
             self.aiming = False
             self.fov = pi / 2
-
         player = gameObject(self.view_matrix.eye, Point(0.5, 0.5, 0.5))
+        sphere = Sphere(Point(8.51, 1.0, -5.15), 1)
         for enemy in self.enemy_list_lvl1:
             enemy.update(self.view_matrix.eye)
             if enemy.check_intersection(player):
                 self.health -= 1
-                #print(self.health)
+        if sphere.check_sphere_intersection(self.view_matrix.eye):
+            self.sphere_collision = True
+        else:
+            self.sphere_collision = False
+        if self.sphere_collision:
+            self.view_matrix.slide(-0.5 * delta_time, 0, 0)
+        pickUpSphere = Sphere(Point(9.1, 1, -3.0), 0.3)
+        if pickUpSphere.check_sphere_intersection(self.view_matrix.eye):
+            print("Pickup")
+            if self.activeGun == 0:
+                self.activeGun = 1
+            if self.activeGun == 1:
+                self.activeGun = 0
+
+        for index in self.guns:
+            if self.activeGun == 0:
+                if index[0] == self.obj_model_gun:
+                    self.guns.remove(index)
+            if self.activeGun == 1:
+                if index[0] == self.obj_model_AR:
+                    self.guns.remove(index)
+        #print(self.view_matrix.eye.x ,self.view_matrix.eye.y, self.view_matrix.eye.z)
 
         # if self.lookUP:
         # self.view_matrix.pitch(-(pi/2)*delta_time)
@@ -325,11 +374,14 @@ class GraphicsProgram3D:
                 self.shot_list.append(shot)
 
         for shot in self.shot_list:
-            shot.position += (Point(-self.view_matrix.n.x, 0, -self.view_matrix.n.z))
+            pygame.mixer.Sound.play(self.gunshot, 0)
+            if self.activeGun == 0:
+                shot.position += (Point(-self.view_matrix.n.x/2, 0, -self.view_matrix.n.z/2))
             updated_shot = gameObject(shot.position, shot.scale)
             for enemy in self.enemy_list_lvl1:
                 if updated_shot.check_intersection(enemy):
-                    enemy.hit_counter += 1
+                    if self.activeGun == 0:
+                        enemy.hit_counter += 0.5
                     pygame.mixer.Sound.play(self.hitmarker, 0)
                     self.collision = True
                     if enemy.hit_counter > 10:
@@ -417,7 +469,7 @@ class GraphicsProgram3D:
         if self.health > 200:
             pygame.mixer.Sound.stop(self.heartbeat)
         #if self.health == 0:
-
+        #print(self.view_matrix.eye.x, self.view_matrix.eye.z)
         """If player is falling, the game ends"""
         if self.view_matrix.eye.y <= -4:
             pygame.quit()
@@ -458,10 +510,33 @@ class GraphicsProgram3D:
         self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
         self.sky_sphere.draw(self.sprite_shader)
         self.model_matrix.pop_matrix()
-        glDisable(GL_TEXTURE_2D)
-
         glEnable(GL_DEPTH_TEST)
         glClear(GL_DEPTH_BUFFER_BIT)
+        if self.activeGun == 0:
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_gun_color)
+            self.sprite_shader.set_diffuse_texture(0)
+            glActiveTexture(GL_TEXTURE1)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_gun_alpha)
+            self.sprite_shader.set_alpha_texture(1)
+            self.sprite_shader.set_opacity(1.0)
+        if self.activeGun == 1:
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_gun1_color)
+            self.sprite_shader.set_diffuse_texture(0)
+            glActiveTexture(GL_TEXTURE1)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_gun1_alpha)
+            self.sprite_shader.set_alpha_texture(1)
+            self.sprite_shader.set_opacity(1.0)
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(9.1, 1, -3.0)
+        self.model_matrix.add_rotate_y(self.angle)
+        self.model_matrix.add_scale(0.3, 0.3, 0.3)
+        self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
+        self.sprite.draw(self.sprite_shader)
+        self.model_matrix.pop_matrix()
+        glDisable(GL_TEXTURE_2D)
+
 
         self.shader.use()
         self.projection_matrix.set_perspective(self.fov, 800 / 600, 0.01, 100)
@@ -476,6 +551,8 @@ class GraphicsProgram3D:
         self.shader.set_normal_light_direction(Point(1.5, 1, -2))
         self.shader.set_normal_light_color(Color(1.0, 1.0, 1.0))
         self.shader.set_other_light_direction(Point(-1.5, -1, -2))
+
+
 
         """Drawing and some more drawing....."""
 
@@ -755,7 +832,7 @@ class GraphicsProgram3D:
             self.shader.set_material_emit(0.0)
             self.model_matrix.push_matrix()
             self.model_matrix.add_translation(enemy.position.x, enemy.position.y, enemy.position.z)
-            self.model_matrix.add_scale(1, 1, 1)
+            self.model_matrix.add_scale(0.3, 0.3, 0.3)
             self.shader.set_model_matrix(self.model_matrix.matrix)
             self.obj_model_cape.draw(self.shader)
             self.model_matrix.pop_matrix()
@@ -784,31 +861,60 @@ class GraphicsProgram3D:
         glDisable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, -1)
 
-        glEnable(GL_TEXTURE_2D)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_flashlight_diffuse)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_flashlight_specular)
-        self.shader.set_use_texture(1.0)
-        self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
-        self.shader.set_material_shiny(10)
-        self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
-        self.shader.set_material_emit(0.0)
-        self.model_matrix.push_matrix()
-        if self.aiming == False:
-            self.model_matrix.add_translation(self.view_matrix.eye.x + 0.1, self.view_matrix.eye.y - 0.3,
-                                              self.view_matrix.eye.z)
-        if self.aiming == True:
-            self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y - 0.2,
-                                              self.view_matrix.eye.z)
-        self.model_matrix.add_rotate_y(-self.flashlight_angle)
-        self.model_matrix.add_scale(0.1, 0.1, 0.15)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.obj_model_gun.draw(self.shader)
-        self.model_matrix.pop_matrix()
-        self.shader.set_use_texture(0.0)
-        glDisable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, -1)
+        if self.activeGun == 0:
+            glEnable(GL_TEXTURE_2D)
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_gun_diffuse)
+            glActiveTexture(GL_TEXTURE1)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_gun_specular)
+            self.shader.set_use_texture(1.0)
+            self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+            self.shader.set_material_shiny(10)
+            self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+            self.shader.set_material_emit(0.0)
+            self.model_matrix.push_matrix()
+            if self.aiming == False:
+                self.model_matrix.add_translation(self.view_matrix.eye.x - self.view_matrix.n.x+0.2, self.view_matrix.eye.y - 0.3,
+                                                  self.view_matrix.eye.z-self.view_matrix.n.z)
+            if self.aiming == True:
+                self.model_matrix.add_translation(self.view_matrix.eye.x- self.view_matrix.n.x, self.view_matrix.eye.y - 0.3,
+                                                  self.view_matrix.eye.z-self.view_matrix.n.z)
+            self.model_matrix.add_rotate_y(-self.flashlight_angle)
+            self.model_matrix.add_scale(0.4, 0.4, 0.55)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.obj_model_gun.draw(self.shader)
+            self.model_matrix.pop_matrix()
+            self.shader.set_use_texture(0.0)
+            glDisable(GL_TEXTURE_2D)
+            glBindTexture(GL_TEXTURE_2D, -1)
+
+        if self.activeGun == 1:
+            glEnable(GL_TEXTURE_2D)
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_AR_diffuse)
+            glActiveTexture(GL_TEXTURE1)
+            glBindTexture(GL_TEXTURE_2D, self.tex_id_AR_specular)
+            self.shader.set_use_texture(1.0)
+            self.shader.set_material_diffuse(Color(1.0, 0.65, 0.1))
+            self.shader.set_material_shiny(10)
+            self.shader.set_material_specular(Color(1.0, 1.0, 1.0))
+            self.shader.set_material_emit(0.0)
+            self.model_matrix.push_matrix()
+            if not self.aiming:
+                self.model_matrix.add_translation(self.view_matrix.eye.x +0.1, self.view_matrix.eye.y - 0.3,
+                                                  self.view_matrix.eye.z)
+            if self.aiming:
+                self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y - 0.3,
+                                                  self.view_matrix.eye.z)
+            self.model_matrix.add_rotate_y(-self.flashlight_angle)
+            self.model_matrix.add_scale(0.1, 0.1, 0.15)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.obj_model_gun.draw(self.shader)
+            self.model_matrix.pop_matrix()
+            self.shader.set_use_texture(0.0)
+            glDisable(GL_TEXTURE_2D)
+            glBindTexture(GL_TEXTURE_2D, -1)
+
 
         glEnable(GL_TEXTURE_2D)
         glActiveTexture(GL_TEXTURE0)
@@ -965,12 +1071,14 @@ class GraphicsProgram3D:
             self.sprite_shader.set_alpha_texture(1)
             self.sprite_shader.set_opacity(1.0)
             self.model_matrix.push_matrix()
-            self.model_matrix.add_translation(self.view_matrix.eye.x - self.view_matrix.n.x, self.view_matrix.eye.y-0.01, self.view_matrix.eye.z-self.view_matrix.n.z)
+            self.model_matrix.add_translation(self.view_matrix.eye.x-self.view_matrix.n.x, self.view_matrix.eye.y, self.view_matrix.eye.z-self.view_matrix.n.z)
             self.model_matrix.add_rotate_y(-self.player_angle)
             self.model_matrix.add_scale(0.1, 0.1, 0.1)
             self.sprite_shader.set_model_matrix(self.model_matrix.matrix)
             self.sprite.draw(self.sprite_shader)
             self.model_matrix.pop_matrix()
+
+
         glDisable(GL_DEPTH_TEST)
 
 

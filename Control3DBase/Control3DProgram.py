@@ -3,14 +3,11 @@ from OpenGL.GLUT import *
 from math import *
 import pygame
 from pygame.locals import *
-import sys
-from objloader import *
-from Base3DObjects import *
-from Shaders import *
-from Matrices import *
-from Control3DBase import objloader
-from gameobject import *
 
+from Control3DBase import objloader
+from Matrices import *
+from Shaders import *
+from gameobject import *
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -160,7 +157,11 @@ class GraphicsProgram3D:
             [3.7, 1.0, -7.6, 0.5, 3.0, 2.3],
             [-4.6, 1.0, -4.975, 0.5, 3.0, 3.0],
             [14.9, 1.0, -6, 3.0, 3.0, 6.0],
-            [9.1, 0.0, -2.0, 40.0, 1.0, 40.0],
+            [13.5, 1.0, -4.0, 0.5, 1.1, 1.9],
+            [10.0, 2.0, -8.6, 7.8, 3, 2.5],
+            [12.9, 1.0, -3.0, 1.8, 1.1, 0.5],
+            [11.9, 1.0, -2.6, 0.3, 1.1, 1.3],
+            [9.1, 0.0, -2.0, 40.0, 1.0, 40.0]
 
         ]
 
@@ -345,18 +346,10 @@ class GraphicsProgram3D:
             self.view_matrix.slide(-0.5 * delta_time, 0, 0)
         pickUpSphere = Sphere(Point(9.1, 1, -3.0), 0.3)
         if pickUpSphere.check_sphere_intersection(self.view_matrix.eye):
-            if self.activeGun == 0 and self.p_key_down:
-                self.activeGun = 1
-            if self.activeGun == 1 and self.p_key_down:
-                self.activeGun = 0
-
-        for index in self.guns:
+            print("Pickup")
             if self.activeGun == 0:
-                if index[0] == self.obj_model_gun:
-                    self.guns.remove(index)
-            if self.activeGun == 1:
-                if index[0] == self.obj_model_AR:
-                    self.guns.remove(index)
+                self.activeGun = 1
+
         #print(self.view_matrix.eye.x ,self.view_matrix.eye.y, self.view_matrix.eye.z)
 
         # if self.lookUP:
@@ -903,12 +896,12 @@ class GraphicsProgram3D:
                 self.model_matrix.add_translation(self.view_matrix.eye.x +0.1, self.view_matrix.eye.y - 0.3,
                                                   self.view_matrix.eye.z)
             if self.aiming:
-                self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y - 0.3,
+                self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y - 0.1,
                                                   self.view_matrix.eye.z)
             self.model_matrix.add_rotate_y(-self.flashlight_angle)
             self.model_matrix.add_scale(0.1, 0.1, 0.15)
             self.shader.set_model_matrix(self.model_matrix.matrix)
-            self.obj_model_gun.draw(self.shader)
+            self.obj_model_AR.draw(self.shader)
             self.model_matrix.pop_matrix()
             self.shader.set_use_texture(0.0)
             glDisable(GL_TEXTURE_2D)
@@ -1144,7 +1137,7 @@ class GraphicsProgram3D:
                     if event.key == K_f:
                         self.jumping = True
 
-                    if event.key == K_p:
+                    if event.key == K_p and self.won:
                         self.p_key_down = True
 
                     if event.key == K_q:
@@ -1178,9 +1171,6 @@ class GraphicsProgram3D:
 
                     if event.key == K_UP:
                         self.lookUP = False
-
-                    if event.key == K_p:
-                        self.p_key_down = False
 
             self.update()
             self.display()

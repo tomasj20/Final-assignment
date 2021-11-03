@@ -345,10 +345,9 @@ class GraphicsProgram3D:
             self.view_matrix.slide(-0.5 * delta_time, 0, 0)
         pickUpSphere = Sphere(Point(9.1, 1, -3.0), 0.3)
         if pickUpSphere.check_sphere_intersection(self.view_matrix.eye):
-            print("Pickup")
-            if self.activeGun == 0:
+            if self.activeGun == 0 and self.p_key_down:
                 self.activeGun = 1
-            if self.activeGun == 1:
+            if self.activeGun == 1 and self.p_key_down:
                 self.activeGun = 0
 
         for index in self.guns:
@@ -1145,7 +1144,7 @@ class GraphicsProgram3D:
                     if event.key == K_f:
                         self.jumping = True
 
-                    if event.key == K_p and self.won:
+                    if event.key == K_p:
                         self.p_key_down = True
 
                     if event.key == K_q:
@@ -1179,6 +1178,9 @@ class GraphicsProgram3D:
 
                     if event.key == K_UP:
                         self.lookUP = False
+
+                    if event.key == K_p:
+                        self.p_key_down = False
 
             self.update()
             self.display()
